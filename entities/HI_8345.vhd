@@ -101,8 +101,8 @@ begin
                 when rd_sense_vals =>
                     if cnt < term_cnt-1 then
                         miso_w <= c_sense_vals(38 - cnt);
-                    elsif cnt = term_cnt then                  current_state <= idle;
-                    end if;
+                   elsif cnt = term_cnt-1 then                  current_state <= idle;
+                   end if;
 
                 when wr_data =>
                     if cnt = 14  then
