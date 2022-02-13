@@ -1,3 +1,13 @@
+------------------------------------------------------------------------------------------
+-- MODIFICHE DA FARE:
+-- Il codice attualmente legge valori in ritardo di circa 90us.
+-- sarebbe meglio leggere valori poco PRIMA del rising edge del clock da 10KHz
+--
+-- funzionamento base di std_discr_if:
+-- soglie configurabili da 2V a 22V       [_]
+-- frequenza di campionamento pari a 10KHz      [_]
+-- std_discr_io riconfigurabile come ingresso/uscita     [_]
+------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
