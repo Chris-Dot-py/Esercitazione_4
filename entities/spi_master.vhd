@@ -34,6 +34,7 @@ entity spi_master is
           get_sample   : in  std_logic;
           HI_threshold : in  integer range 1 to 10;
           LO_threshold : in  integer range 1 to 10;
+          -- center_val : in  integer range 1 to 10;
           -- trigger_type : t_trigger_type; --  {edge, level}
           -- level_threshold_samples : integer range 1 to 500;
           slv_addr     : in  std_logic_vector(number_of_slaves-1 downto 0);
@@ -57,10 +58,14 @@ architecture spi_master_arch of spi_master is
                                           4 => x"1E", 5  => x"82", 6  => x"84",  7 => x"BA",
                                           8 => x"BC", 9  => x"9E", 10 => x"90", 11 => x"92",
                                          12 => x"94", 13 => x"96", 14 => x"F8" );
+
+      signal tmp_hyts_val : std_logic_vector(7 downto 0) := x"06";
+      signal tmp_center_val : std_logic_vector(7 downto 0) := x"5D";
+
     --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
-    type states is (idle, get_op_code, send_op_code, rd_from_slv, wr_to_slv);
+    type states is (idle, get_op_code, send_op_code, prog_threshold, rd_from_slv, wr_to_slv);
     signal current_state : states;
     -- edge detect signals: decodifica campiona segnali
     signal get_sample_d0 : std_logic;
@@ -154,6 +159,7 @@ begin
     end process;
 
     -- ******** to be REVISED ********
+    -- move this logic to fsm
     mosi <= mosi_w;
     p_mosi : process(clk_internal, reset)
         variable cnt : integer range 0 to 7;
@@ -209,8 +215,12 @@ begin
 
                 -- decodificare il segnale che arriva
                 when idle =>
-                    if send_get_samples_cmd = '1' then      current_state <= get_op_code;
+                    if send_get_samples_cmd = '1' then
                         data_byte <= c_op_codes(14);
+                        current_state <= get_op_code;
+                  elsif set_threshold = '1' then
+                        -- ******** to be REVISED ********
+                        -- add states for each lenght of command sent
                     end if;
 
                 when get_op_code =>
