@@ -7,6 +7,10 @@
 -- soglie configurabili da 2V a 22V       [_]
 -- frequenza di campionamento pari a 10KHz      [_]
 -- std_discr_io riconfigurabile come ingresso/uscita     [_]
+
+-- quando si configura l'holt, mando un impulso di avvio configurazione
+-- seguito dal comando di settaggio dei sense banks psen
+-- seguito dal comando del settaggio di isteresi e central value
 ------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -29,14 +33,14 @@ entity spi_master is
           reset        : in  std_logic;
           busy         : out std_logic;
           --  command/configurations signals
-          set_threshold : in std_logic;
-          -- set_inout    : in std_logic; -- '0' for input '1' for output
+          set_config : in std_logic;    -- segnale di avvio configurazione
+          ctrl_reg     : in std_logic_vector(1 downto 0);
+          psen         : in std_logic_vector(3 downto 0);
+          tm_data      : in std_logic_vector(3 downto 0);
+          HI_threshold : in integer range 1 to 10;
+          LO_threshold : in integer range 1 to 10;
+          -- segnale di avvio per campionamento
           get_sample   : in  std_logic;
-          HI_threshold : in  integer range 1 to 10;
-          LO_threshold : in  integer range 1 to 10;
-          -- center_val : in  integer range 1 to 10;
-          -- trigger_type : t_trigger_type; --  {edge, level}
-          -- level_threshold_samples : integer range 1 to 500;
           slv_addr     : in  std_logic_vector(number_of_slaves-1 downto 0);
           -- 32 bit register as input for the 32 ch standard discrete IO
           sense        : out std_logic_vector(31 downto 0);
@@ -59,22 +63,25 @@ architecture spi_master_arch of spi_master is
                                           8 => x"BC", 9  => x"9E", 10 => x"90", 11 => x"92",
                                          12 => x"94", 13 => x"96", 14 => x"F8" );
 
-    signal tmp_hyts_val : std_logic_vector(7 downto 0) := x"06";
-    signal tmp_center_val : std_logic_vector(7 downto 0) := x"5D";
 
     --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
-    type states is (idle, send_op_code, prog_threshold, rd_from_slv, wr_to_slv);
+    type states is (idle, send_op_code, configuation_mode, rd_from_slv, wr_to_slv);
     signal current_state : states;
+    -- SPI COMMANDS
+    signal spi_cmd : std_logic_vector(15 downto 0);
+
+    signal r_psen : std_logic_vector(7 downto 0);
+
     -- edge detect signals: decodifica campiona segnali
     signal get_sample_d0 : std_logic;
     signal get_sample_d1 : std_logic;
     signal send_get_samples_cmd : std_logic;
-
-    signal spi_cmd : std_logic_vector(15 downto 0);
+    -- set_threshold signals
+    signal hyts_val : std_logic_vector(7 downto 0);
+    signal center_val : std_logic_vector(7 downto 0);
     -- placeholder for serializer mosi
-    signal data_byte : std_logic_Vector(7 downto 0);
     signal op_code : std_logic_vector(7 downto 0);
     -- output wirings
     signal sense_w : std_logic_vector(31 downto 0);
@@ -178,6 +185,15 @@ begin
         end if;
     end process;
 
+    p_save_inputs : process(clk_internal, reset)
+    begin
+        if reset = '0' then
+            r_psen <= (others => '0');
+        elsif rising_edge(clk_internal) then
+            r_psen(3 downto 0) <= psen;
+        end if;
+    end process;
+
     --------------------------------------------------------------------------------------
     -- fsm
     --------------------------------------------------------------------------------------
@@ -185,7 +201,7 @@ begin
     mosi <= mosi_w; -- wiring
     -- spi cmd register
     spi_cmd(15) <= send_get_samples_cmd;
-    spi_cmd(14) <= '0';
+    spi_cmd(14) <= set_config;
     spi_cmd(13) <= '0';
     spi_cmd(12) <= '0';
     spi_cmd(11) <= '0';
@@ -200,12 +216,14 @@ begin
     spi_cmd(2) <= '0';
     spi_cmd(1) <= '0';
     spi_cmd(0) <= '0';
+    -- Hysteresis and center value
+    hyts_val <= conv_std_logic_vector(HI_threshold - LO_threshold, hyts_val'length);
+    center_val <= conv_std_logic_vector(HI_threshold + LO_threshold, hyts_val'length);
     p_fsm : process(clk_internal, reset)
     begin
         if reset = '0' then
             current_state <= idle;
             timing_cnt_en <= '0';
-            data_byte <= (others => '0');
             sense_w <= (others => '0');
             op_code <= (others => '0');
             mosi_w <= '0';
@@ -223,6 +241,9 @@ begin
                     case( spi_cmd ) is
                         when x"8000" =>
                             op_code <= c_op_codes(14); -- x"F8"
+                        when x"4000" =>
+                            op_code <= c_op_codes(1); -- x"04"
+
                         when others =>
                             -- ogni bit del registro corrisponde ad un comando
                             -- se me ne arrivano due contemporaneamente è invalid
@@ -254,6 +275,22 @@ begin
                             end if;
                         when others =>
                             term_cnt <= 18; -- 16 + 2
+                            if timing_cnt >= 9 then
+                                if op_code(7) = '0' then           current_state <= wr_to_slv;
+
+                                    case( op_code ) is
+
+                                        when x"04" =>
+                                            mosi_w <= r_psen(7);
+
+                                        when others =>
+                                            mosi_w <= '0';
+                                    end case;
+
+                                elsif op_code(7) = '1' then        current_state <= rd_from_slv;
+                                    sense_w(0) <= miso;
+                                end if;
+                            end if;
                     end case;
                 ----
                 ----
@@ -266,10 +303,23 @@ begin
                     elsif timing_cnt = term_cnt then           current_state <= idle;
                         timing_cnt_en <= '0';
                     end if;
-
                 ----
                 ---- add code for holt configuration
                 when wr_to_slv =>
+                    if timing_cnt < term_cnt-1 then
+
+                        case( op_code ) is
+
+                            when x"04" =>
+                                mosi_w <= r_psen(16 - conv_integer(timing_cnt));
+
+                            when others =>
+
+                        end case;
+
+                    elsif timing_cnt = term_cnt then           current_state <= idle;
+                        timing_cnt_en <= '0';
+                    end if;
                 ----
                 ----
                 when others =>

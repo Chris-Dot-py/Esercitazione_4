@@ -19,17 +19,9 @@ end entity HI_8345;
 
 architecture HI_8345_arch of HI_8345 is
     --------------------------------------------------------------------------------------
-    -- component declarations
-    --------------------------------------------------------------------------------------
-
-    --------------------------------------------------------------------------------------
-    -- constants
-    --------------------------------------------------------------------------------------
-
-    --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
-    type t_states is (idle, rd_op_code, wr_data, rd_sense_vals);
+    type t_states is (idle, rd_op_code, wr_data, rd_data);
     signal current_state : t_states := idle;
 
     signal c_sense_vals : std_logic_vector(31 downto 0) := x"AA" & x"BB" & x"CC" & x"DD";
@@ -44,10 +36,8 @@ architecture HI_8345_arch of HI_8345 is
 
     signal shift_register : std_logic_vector(7 downto 0) := (others => '0');
     signal miso_w : std_logic := '0';
+
 begin
-
-
-
     --------------------------------------------------------------------------------------
     -- processes
     --------------------------------------------------------------------------------------
@@ -70,47 +60,46 @@ begin
     -- fsm
     --------------------------------------------------------------------------------------
     miso <= miso_w;
-    p_fsm : process(sclk)
+    p_fsm : process(sclk,csn(0))
     begin
-        if falling_edge(sclk) then
+        if csn(0) = '1' then
+            current_state <= idle;
+            miso_w <= '0';
+            cnt <= 0;
+        elsif falling_edge(sclk) then
             --fsm
             case( current_state ) is
-                when idle =>   current_state <= rd_op_code;
-                    cnt <= 0;
-
+                when idle =>
+                    current_state <= rd_op_code;
                 when rd_op_code =>
                     if  cnt = 7 then
                         -- save op_cpode
                         op_code <= shift_register;
-                        -- decode oo_code
+                        -- decode op_code
                         case( shift_register ) is
                             when x"3A" | x"3C" | x"BA" | x"BC" =>
                                 term_cnt <= 24;
-
-                            when x"F8" => 
+                            when x"F8" =>
                                 term_cnt <= 40;
-
                             when others =>
                                 term_cnt <= 16;
                         end case;
                         -- read or write
-                        if shift_register(7) = '1' then         current_state <= rd_sense_vals;
+                        if shift_register(7) = '1' then         current_state <= rd_data;
                             miso_w <= c_sense_vals(31);
                         elsif shift_register(7) = '0' then      current_state <= wr_data;
                             miso_w <= c_sense_vals(31);
                         end if;
                     end if;
 
-                when rd_sense_vals =>
+                when rd_data =>
                     if cnt < term_cnt-1 then
                         miso_w <= c_sense_vals(38 - cnt);
                    elsif cnt = term_cnt-1 then                  current_state <= idle;
                    end if;
 
                 when wr_data =>
-                    if cnt = 14  then
-                        data_byte_1 <= shift_register;
-                    elsif cnt = term_cnt then                  current_state <= idle;
+                    if cnt = term_cnt-1 then                  current_state <= idle;
                         data_byte_0 <= shift_register;
                     end if;
 
