@@ -32,7 +32,6 @@ architecture HI_8345_arch of HI_8345 is
 
     signal cnt : integer range 0 to 63 := 0;
     signal term_cnt : integer range 0 to 63 := 40;
-    signal tmp : integer range 0 to 63 := 0;
 
     signal shift_register : std_logic_vector(7 downto 0) := (others => '0');
     signal miso_w : std_logic := '0';
@@ -100,7 +99,12 @@ begin
                    end if;
 
                 when wr_data =>
-                    if cnt = term_cnt-1 then                  current_state <= idle;
+                    -- **** TO BE REVISED ****
+                    -- must make a separate file for mux of registers
+                    -- add a case/ address for mux with registers
+                    if cnt = 15 then
+                        data_byte_1 <= shift_register;
+                    elsif cnt = term_cnt-1 then                  current_state <= idle;
                         data_byte_0 <= shift_register;
                     end if;
 

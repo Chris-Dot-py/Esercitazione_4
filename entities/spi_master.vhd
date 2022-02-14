@@ -26,6 +26,14 @@ library work;
 ------------------------------------------------------------------------------------------
 -- this spi master is specific to HI-8435
 ------------------------------------------------------------------------------------------
+
+-- OTTIMIZZAZIONE : mettere un UNICO ingressso da 8 byte
+-- supponendo che prima dell'arrivo del segnale di configurazione
+-- i byte da trasmettere via master sono gia pronti.
+-- In due colpi di clock prelevo sia HI_threshold val e LO_threshold_val
+-- al terzo mando il segnale di "set thresholds"
+-- aggiungere un ingresso std_logic_vector che prenda convoglia tutti i segnali di comando
+-- METTERE TUTTO POI IN UN RECORD!!!!
 entity spi_master is
      generic(number_of_slaves : integer := 1);
      port (
@@ -36,9 +44,10 @@ entity spi_master is
           get_sample   : in  std_logic;
           slv_addr     : in  std_logic_vector(number_of_slaves-1 downto 0);
           --  command/configurations signals
+          set_ctrl      : in std_logic;
+          ctrl_reg     : in std_logic_vector(1 downto 0);
           set_psen : in std_logic;
           psen         : in std_logic_vector(3 downto 0);
-          ctrl_reg     : in std_logic_vector(1 downto 0);
           tm_data      : in std_logic_vector(3 downto 0);
           set_thresholds : in std_logic_vector(1 downto 0);
           -- siccome la risoluzione è di 0.5 raddoppio il range e poi divido per due il risultato
@@ -71,11 +80,15 @@ architecture spi_master_arch of spi_master is
     type states is (idle, send_op_code, configuation_mode, rd_from_slv, wr_to_slv);
     signal current_state : states;
     -- SPI COMMANDS
-    signal spi_cmd : std_logic_vector(3 downto 0);
+    signal spi_cmd : std_logic_vector(4 downto 0);
+
+    --------------------------------------------------------------------------------------
+    -- sostituire tutti questi registri con un UNICO registro da 8 byte.
+    -- per ogni comando SPI me ne serve solo 1. Prendo quello di ingresso e lo salvo qui
+    --------------------------------------------------------------------------------------
     -- registro valori
+    signal r_ctrl_reg : std_logic_vector(7 downto 0);
     signal r_psen : std_logic_vector(7 downto 0);
-    signal r_hi_threshold : std_logic_vector(7 downto 0);
-    signal r_lo_threshold : std_logic_vector(7 downto 0);
     signal hyst_val : std_logic_vector(7 downto 0);
     signal center_val : std_logic_vector(7 downto 0);
     -- placeholder for serializer mosi
@@ -146,25 +159,6 @@ begin
     --------------------------------------------------------------------------------------
     -- slow internal clock (16.666..MHz) processes
     --------------------------------------------------------------------------------------
-    -- p_detect_re_get_sample : process(clk_internal, reset)
-    -- begin
-    --     if reset = '0' then
-    --         get_sample_d0 <= '0';
-    --         get_sample_d1 <= '0';
-    --         send_get_samples_cmd <= '0';
-    --     elsif rising_edge(clk_internal) then
-    --         get_sample_d0 <= get_sample;
-    --         get_sample_d1 <= get_sample_d0;
-    --
-    --         -- detect rising edge
-    --         if get_sample_d0 = '1' AND get_sample_d1 = '0' then
-    --             send_get_samples_cmd <= '1';
-    --         else
-    --             send_get_samples_cmd <= '0';
-    --         end if;
-    --     end if;
-    -- end process;
-
     busy <= or_reduce(timing_cnt);  -- SPI is busy when sending data.
     -- process for the main timing counter when sending spi commands
     p_timing_counter : process(clk_internal, reset)
@@ -182,16 +176,18 @@ begin
         end if;
     end process;
 
+    --------------------------------------------------------------------------------------
+    -- da sostituire con un unico registro DATA_BYTE.
+    -- gli altri registri sono ridondanti
+    --------------------------------------------------------------------------------------
     p_save_inputs : process(clk_internal, reset)
     begin
         if reset = '0' then
             r_psen <= (others => '0');
-            r_hi_threshold <= (others => '0');
-            r_lo_threshold <= (others => '0');
+            r_ctrl_reg <= (others => '0');
         elsif rising_edge(clk_internal) then
             r_psen(3 downto 0) <= psen;
-            r_hi_threshold <= (others => '0');
-            r_lo_threshold <= (others => '0');
+            r_ctrl_reg(1 downto 0) <= ctrl_reg;
         end if;
     end process;
 
@@ -201,13 +197,14 @@ begin
     sense <= sense_w; -- wiring
     mosi <= mosi_w; -- wiring
     -- spi cmd register
+    spi_cmd(4) <= set_ctrl;
     spi_cmd(3) <= set_thresholds(1);
     spi_cmd(2) <= set_thresholds(0); -- eet_thresholds
     spi_cmd(1) <= set_psen;
     spi_cmd(0) <= get_sample;
     -- Hysteresis and center value
-    hyst_val <= conv_std_logic_vector(HI_threshold - LO_threshold, hyst_val'length);
-    center_val <= conv_std_logic_vector(HI_threshold + LO_threshold, center_val'length);
+    hyst_val <= conv_std_logic_vector((HI_threshold - LO_threshold)/2, hyst_val'length);
+    center_val <= conv_std_logic_vector((HI_threshold + LO_threshold)/2, center_val'length);
     p_fsm : process(clk_internal, reset)
     begin
         if reset = '0' then
@@ -228,14 +225,16 @@ begin
 
                     -- decodifica registro spi_cmd
                     case( spi_cmd ) is
-                        when "0001" =>
+                        when "00001" =>
                             op_code <= c_op_codes(14); -- x"F8"
-                        when "0010" =>
+                        when "00010" =>
                             op_code <= c_op_codes(1); -- x"04"
-                        when "0100" =>
+                        when "00100" =>
                             op_code <= c_op_codes(2); -- x"3A"
-                        when "1000" =>
+                        when "01000" =>
                             op_code <= c_op_codes(3); --x"3C"
+                        when "10000" =>
+                            op_code <= c_op_codes(0); --x"02"
                         when others =>
                             -- ogni bit del registro corrisponde ad un comando
                             -- se me ne arrivano due contemporaneamente è invalid
@@ -279,6 +278,8 @@ begin
                                     case( op_code ) is
                                         when x"04" =>
                                             mosi_w <= r_psen(7);
+                                        when x"02" =>
+                                            mosi_w <= r_ctrl_reg(7);
                                         when others =>
                                             mosi_w <= '0';
                                     end case;
@@ -311,6 +312,8 @@ begin
                                 else
                                     mosi_w <= center_val(24 - conv_integer(timing_cnt));
                                 end if;
+                            when x"02" =>
+                                mosi_w <= r_ctrl_reg(16 - conv_integer(timing_cnt));
                             when others =>
                                 mosi_w <= '0';
                         end case;
