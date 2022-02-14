@@ -64,13 +64,14 @@ begin
     begin
         if csn(0) = '1' then
             current_state <= idle;
-            miso_w <= '0';
+            miso_w <= 'Z';
             cnt <= 0;
         elsif falling_edge(sclk) then
             --fsm
             case( current_state ) is
                 when idle =>
                     current_state <= rd_op_code;
+                    miso_w <= 'Z';
                 when rd_op_code =>
                     if  cnt = 7 then
                         -- save op_cpode
@@ -88,7 +89,6 @@ begin
                         if shift_register(7) = '1' then         current_state <= rd_data;
                             miso_w <= c_sense_vals(31);
                         elsif shift_register(7) = '0' then      current_state <= wr_data;
-                            miso_w <= c_sense_vals(31);
                         end if;
                     end if;
 
@@ -96,6 +96,7 @@ begin
                     if cnt < term_cnt-1 then
                         miso_w <= c_sense_vals(38 - cnt);
                    elsif cnt = term_cnt-1 then                  current_state <= idle;
+                        miso_w <= 'Z';
                    end if;
 
                 when wr_data =>
@@ -104,6 +105,7 @@ begin
                     end if;
 
                 when others =>
+                    miso_w <= 'Z';
                     current_state <= idle;
             end case;
 

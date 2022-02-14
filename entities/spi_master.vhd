@@ -33,12 +33,14 @@ entity spi_master is
           reset        : in  std_logic;
           busy         : out std_logic;
           --  command/configurations signals
-          set_config : in std_logic;    -- segnale di avvio configurazione
-          ctrl_reg     : in std_logic_vector(1 downto 0);
+          set_psen : in std_logic;
           psen         : in std_logic_vector(3 downto 0);
+          ctrl_reg     : in std_logic_vector(1 downto 0);
           tm_data      : in std_logic_vector(3 downto 0);
-          HI_threshold : in integer range 1 to 10;
-          LO_threshold : in integer range 1 to 10;
+          set_thresholds : in std_logic_vector(1 downto 0);
+          -- siccome la risoluzione è di 0.5 raddoppio il range e poi divido per due il risultato
+          HI_threshold : in integer range 6 to 44; -- max 22V min 3V
+          LO_threshold : in integer range 4 to 42; -- max 21V min 2V
           -- segnale di avvio per campionamento
           get_sample   : in  std_logic;
           slv_addr     : in  std_logic_vector(number_of_slaves-1 downto 0);
@@ -70,7 +72,7 @@ architecture spi_master_arch of spi_master is
     type states is (idle, send_op_code, configuation_mode, rd_from_slv, wr_to_slv);
     signal current_state : states;
     -- SPI COMMANDS
-    signal spi_cmd : std_logic_vector(15 downto 0);
+    signal spi_cmd : std_logic_vector(3 downto 0);
 
     signal r_psen : std_logic_vector(7 downto 0);
 
@@ -79,6 +81,8 @@ architecture spi_master_arch of spi_master is
     signal get_sample_d1 : std_logic;
     signal send_get_samples_cmd : std_logic;
     -- set_threshold signals
+    signal r_hi_threshold : std_logic_vector(7 downto 0);
+    signal r_lo_threshold : std_logic_vector(7 downto 0);
     signal hyts_val : std_logic_vector(7 downto 0);
     signal center_val : std_logic_vector(7 downto 0);
     -- placeholder for serializer mosi
@@ -189,8 +193,12 @@ begin
     begin
         if reset = '0' then
             r_psen <= (others => '0');
+            r_hi_threshold <= (others => '0');
+            r_lo_threshold <= (others => '0');
         elsif rising_edge(clk_internal) then
             r_psen(3 downto 0) <= psen;
+            r_hi_threshold <= (others => '0');
+            r_lo_threshold <= (others => '0');
         end if;
     end process;
 
@@ -200,22 +208,10 @@ begin
     sense <= sense_w; -- wiring
     mosi <= mosi_w; -- wiring
     -- spi cmd register
-    spi_cmd(15) <= send_get_samples_cmd;
-    spi_cmd(14) <= set_config;
-    spi_cmd(13) <= '0';
-    spi_cmd(12) <= '0';
-    spi_cmd(11) <= '0';
-    spi_cmd(10) <= '0';
-    spi_cmd(9) <= '0';
-    spi_cmd(8) <= '0';
-    spi_cmd(7) <= '0';
-    spi_cmd(6) <= '0';
-    spi_cmd(5) <= '0';
-    spi_cmd(4) <= '0';
     spi_cmd(3) <= '0';
-    spi_cmd(2) <= '0';
-    spi_cmd(1) <= '0';
-    spi_cmd(0) <= '0';
+    spi_cmd(2) <= '0'; -- eet_thresholds
+    spi_cmd(1) <= set_psen;
+    spi_cmd(0) <= send_get_samples_cmd;
     -- Hysteresis and center value
     hyts_val <= conv_std_logic_vector(HI_threshold - LO_threshold, hyts_val'length);
     center_val <= conv_std_logic_vector(HI_threshold + LO_threshold, hyts_val'length);
@@ -239,11 +235,14 @@ begin
 
                     -- decodifica registro spi_cmd
                     case( spi_cmd ) is
-                        when x"8000" =>
+                        when "0001" =>
                             op_code <= c_op_codes(14); -- x"F8"
-                        when x"4000" =>
+                        when "0010" =>
                             op_code <= c_op_codes(1); -- x"04"
-
+                        when "0100" =>
+                            op_code <= c_op_codes(2); -- x"3A"
+                        when "1000" =>
+                            op_code <= c_op_codes(3); --"3C"
                         when others =>
                             -- ogni bit del registro corrisponde ad un comando
                             -- se me ne arrivano due contemporaneamente è invalid
@@ -263,6 +262,7 @@ begin
                             term_cnt <= 26; -- 24 + 2
                             if timing_cnt >= 9 then
                                 if op_code(7) = '0' then           current_state <= wr_to_slv;
+                                    mosi_w <= '0'; -- threshold values register
                                 elsif op_code(7) = '1' then        current_state <= rd_from_slv;
                                     sense_w(0) <= miso;
                                 end if;
