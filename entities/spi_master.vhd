@@ -32,6 +32,9 @@ entity spi_master is
           clock        : in  std_logic;
           reset        : in  std_logic;
           busy         : out std_logic;
+          -- segnale di avvio per campionamento
+          get_sample   : in  std_logic;
+          slv_addr     : in  std_logic_vector(number_of_slaves-1 downto 0);
           --  command/configurations signals
           set_psen : in std_logic;
           psen         : in std_logic_vector(3 downto 0);
@@ -41,9 +44,6 @@ entity spi_master is
           -- siccome la risoluzione è di 0.5 raddoppio il range e poi divido per due il risultato
           HI_threshold : in integer range 6 to 44; -- max 22V min 3V
           LO_threshold : in integer range 4 to 42; -- max 21V min 2V
-          -- segnale di avvio per campionamento
-          get_sample   : in  std_logic;
-          slv_addr     : in  std_logic_vector(number_of_slaves-1 downto 0);
           -- 32 bit register as input for the 32 ch standard discrete IO
           sense        : out std_logic_vector(31 downto 0);
           -- spi bus
@@ -65,7 +65,6 @@ architecture spi_master_arch of spi_master is
                                           8 => x"BC", 9  => x"9E", 10 => x"90", 11 => x"92",
                                          12 => x"94", 13 => x"96", 14 => x"F8" );
 
-
     --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
@@ -73,17 +72,11 @@ architecture spi_master_arch of spi_master is
     signal current_state : states;
     -- SPI COMMANDS
     signal spi_cmd : std_logic_vector(3 downto 0);
-
+    -- registro valori
     signal r_psen : std_logic_vector(7 downto 0);
-
-    -- edge detect signals: decodifica campiona segnali
-    signal get_sample_d0 : std_logic;
-    signal get_sample_d1 : std_logic;
-    signal send_get_samples_cmd : std_logic;
-    -- set_threshold signals
     signal r_hi_threshold : std_logic_vector(7 downto 0);
     signal r_lo_threshold : std_logic_vector(7 downto 0);
-    signal hyts_val : std_logic_vector(7 downto 0);
+    signal hyst_val : std_logic_vector(7 downto 0);
     signal center_val : std_logic_vector(7 downto 0);
     -- placeholder for serializer mosi
     signal op_code : std_logic_vector(7 downto 0);
@@ -153,24 +146,24 @@ begin
     --------------------------------------------------------------------------------------
     -- slow internal clock (16.666..MHz) processes
     --------------------------------------------------------------------------------------
-    p_detect_re_get_sample : process(clk_internal, reset)
-    begin
-        if reset = '0' then
-            get_sample_d0 <= '0';
-            get_sample_d1 <= '0';
-            send_get_samples_cmd <= '0';
-        elsif rising_edge(clk_internal) then
-            get_sample_d0 <= get_sample;
-            get_sample_d1 <= get_sample_d0;
-
-            -- detect rising edge
-            if get_sample_d0 = '1' AND get_sample_d1 = '0' then
-                send_get_samples_cmd <= '1';
-            else
-                send_get_samples_cmd <= '0';
-            end if;
-        end if;
-    end process;
+    -- p_detect_re_get_sample : process(clk_internal, reset)
+    -- begin
+    --     if reset = '0' then
+    --         get_sample_d0 <= '0';
+    --         get_sample_d1 <= '0';
+    --         send_get_samples_cmd <= '0';
+    --     elsif rising_edge(clk_internal) then
+    --         get_sample_d0 <= get_sample;
+    --         get_sample_d1 <= get_sample_d0;
+    --
+    --         -- detect rising edge
+    --         if get_sample_d0 = '1' AND get_sample_d1 = '0' then
+    --             send_get_samples_cmd <= '1';
+    --         else
+    --             send_get_samples_cmd <= '0';
+    --         end if;
+    --     end if;
+    -- end process;
 
     busy <= or_reduce(timing_cnt);  -- SPI is busy when sending data.
     -- process for the main timing counter when sending spi commands
@@ -208,13 +201,13 @@ begin
     sense <= sense_w; -- wiring
     mosi <= mosi_w; -- wiring
     -- spi cmd register
-    spi_cmd(3) <= '0';
-    spi_cmd(2) <= '0'; -- eet_thresholds
+    spi_cmd(3) <= set_thresholds(1);
+    spi_cmd(2) <= set_thresholds(0); -- eet_thresholds
     spi_cmd(1) <= set_psen;
-    spi_cmd(0) <= send_get_samples_cmd;
+    spi_cmd(0) <= get_sample;
     -- Hysteresis and center value
-    hyts_val <= conv_std_logic_vector(HI_threshold - LO_threshold, hyts_val'length);
-    center_val <= conv_std_logic_vector(HI_threshold + LO_threshold, hyts_val'length);
+    hyst_val <= conv_std_logic_vector(HI_threshold - LO_threshold, hyst_val'length);
+    center_val <= conv_std_logic_vector(HI_threshold + LO_threshold, center_val'length);
     p_fsm : process(clk_internal, reset)
     begin
         if reset = '0' then
@@ -242,7 +235,7 @@ begin
                         when "0100" =>
                             op_code <= c_op_codes(2); -- x"3A"
                         when "1000" =>
-                            op_code <= c_op_codes(3); --"3C"
+                            op_code <= c_op_codes(3); --x"3C"
                         when others =>
                             -- ogni bit del registro corrisponde ad un comando
                             -- se me ne arrivano due contemporaneamente è invalid
@@ -262,7 +255,12 @@ begin
                             term_cnt <= 26; -- 24 + 2
                             if timing_cnt >= 9 then
                                 if op_code(7) = '0' then           current_state <= wr_to_slv;
-                                    mosi_w <= '0'; -- threshold values register
+                                    case( op_code ) is
+                                        when x"3A" | x"3C" =>
+                                            mosi_w <= hyst_val(7);
+                                        when others =>
+                                            mosi_w <= '0';
+                                    end case;
                                 elsif op_code(7) = '1' then        current_state <= rd_from_slv;
                                     sense_w(0) <= miso;
                                 end if;
@@ -273,20 +271,17 @@ begin
                             if timing_cnt >= 9 then       current_state <= rd_from_slv;
                                 sense_w(0) <= miso;
                             end if;
+
                         when others =>
                             term_cnt <= 18; -- 16 + 2
                             if timing_cnt >= 9 then
                                 if op_code(7) = '0' then           current_state <= wr_to_slv;
-
                                     case( op_code ) is
-
                                         when x"04" =>
                                             mosi_w <= r_psen(7);
-
                                         when others =>
                                             mosi_w <= '0';
                                     end case;
-
                                 elsif op_code(7) = '1' then        current_state <= rd_from_slv;
                                     sense_w(0) <= miso;
                                 end if;
@@ -307,16 +302,18 @@ begin
                 ---- add code for holt configuration
                 when wr_to_slv =>
                     if timing_cnt < term_cnt-1 then
-
                         case( op_code ) is
-
                             when x"04" =>
                                 mosi_w <= r_psen(16 - conv_integer(timing_cnt));
-
+                            when x"3A" | x"3C" =>
+                                if timing_cnt < term_cnt - 9 then
+                                    mosi_w <= hyst_val(16 - conv_integer(timing_cnt));
+                                else
+                                    mosi_w <= center_val(24 - conv_integer(timing_cnt));
+                                end if;
                             when others =>
-
+                                mosi_w <= '0';
                         end case;
-
                     elsif timing_cnt = term_cnt then           current_state <= idle;
                         timing_cnt_en <= '0';
                     end if;

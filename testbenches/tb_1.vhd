@@ -125,21 +125,31 @@ begin
         wait for 5 ns;
     end process;
 
-    p_gen_clk_10KHz : process
-    begin
-        get_sample_w <= '0';
-        wait for 5 us;
-        get_sample_w <= '1';
-        wait for 5 us;
-    end process;
-
-    p_set_psen : process
+    p_signals : process
     begin
         set_psen_W <= '0';
+        get_sample_w <= '0';
+
+        -- get sample
+        wait for 400 ns;
+        get_sample_w <= '1';
+        wait until rising_edge(busy_w);
+        get_sample_w <= '0';
+        -- set psen
         wait until falling_edge(busy_w);
         set_psen_W <= '1';
-        wait for 61 ns;
+        wait until rising_edge(busy_w);
         set_psen_W <= '0';
+        -- set thresholds
+        wait until falling_edge(busy_w);
+        set_thresholds_w <= "01";
+        wait until rising_edge(busy_w);
+        set_thresholds_w <= "00";
+        -- set thresholds
+        wait until falling_edge(busy_w);
+        set_thresholds_w <= "10";
+        wait until rising_edge(busy_w);
+        set_thresholds_w <= "00";
         wait;
     end process;
 
