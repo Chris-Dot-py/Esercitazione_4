@@ -59,20 +59,23 @@ architecture spi_master_arch of spi_master is
                                           8 => x"BC", 9  => x"9E", 10 => x"90", 11 => x"92",
                                          12 => x"94", 13 => x"96", 14 => x"F8" );
 
-      signal tmp_hyts_val : std_logic_vector(7 downto 0) := x"06";
-      signal tmp_center_val : std_logic_vector(7 downto 0) := x"5D";
+    signal tmp_hyts_val : std_logic_vector(7 downto 0) := x"06";
+    signal tmp_center_val : std_logic_vector(7 downto 0) := x"5D";
 
     --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
-    type states is (idle, get_op_code, send_op_code, prog_threshold, rd_from_slv, wr_to_slv);
+    type states is (idle, send_op_code, prog_threshold, rd_from_slv, wr_to_slv);
     signal current_state : states;
     -- edge detect signals: decodifica campiona segnali
     signal get_sample_d0 : std_logic;
     signal get_sample_d1 : std_logic;
     signal send_get_samples_cmd : std_logic;
+
+    signal spi_cmd : std_logic_vector(15 downto 0);
     -- placeholder for serializer mosi
     signal data_byte : std_logic_Vector(7 downto 0);
+    signal op_code : std_logic_vector(7 downto 0);
     -- output wirings
     signal sense_w : std_logic_vector(31 downto 0);
     signal sclk_w  : std_logic;
@@ -158,27 +161,6 @@ begin
         end if;
     end process;
 
-    -- ******** to be REVISED ********
-    -- move this logic to fsm
-    mosi <= mosi_w;
-    p_mosi : process(clk_internal, reset)
-        variable cnt : integer range 0 to 7;
-    begin
-        if reset = '0' then
-            mosi_w <= '0';
-            cnt := 0;
-        elsif rising_edge(clk_internal) then
-            if timing_cnt > 0 AND timing_cnt < term_cnt-1 then
-                mosi_w <= data_byte(7 - cnt); -- data_byte ** to be REVISED **
-                if cnt = 7 then
-                    cnt := 0;
-                else
-                    cnt := cnt + 1;
-                end if;
-            end if;
-        end if;
-    end process;
-
     busy <= or_reduce(timing_cnt);  -- SPI is busy when sending data.
     -- process for the main timing counter when sending spi commands
     p_timing_counter : process(clk_internal, reset)
@@ -190,11 +172,8 @@ begin
                 if timing_cnt < term_cnt then
                     timing_cnt <= timing_cnt + 1;
                 else
-                    -- timing_cnt_en <= '0';
                     timing_cnt <= (others => '0');
                 end if;
-            -- else
-            --     timing_cnt <= (others => '0');
             end if;
         end if;
     end process;
@@ -203,6 +182,24 @@ begin
     -- fsm
     --------------------------------------------------------------------------------------
     sense <= sense_w; -- wiring
+    mosi <= mosi_w; -- wiring
+    -- spi cmd register
+    spi_cmd(15) <= send_get_samples_cmd;
+    spi_cmd(14) <= '0';
+    spi_cmd(13) <= '0';
+    spi_cmd(12) <= '0';
+    spi_cmd(11) <= '0';
+    spi_cmd(10) <= '0';
+    spi_cmd(9) <= '0';
+    spi_cmd(8) <= '0';
+    spi_cmd(7) <= '0';
+    spi_cmd(6) <= '0';
+    spi_cmd(5) <= '0';
+    spi_cmd(4) <= '0';
+    spi_cmd(3) <= '0';
+    spi_cmd(2) <= '0';
+    spi_cmd(1) <= '0';
+    spi_cmd(0) <= '0';
     p_fsm : process(clk_internal, reset)
     begin
         if reset = '0' then
@@ -210,34 +207,56 @@ begin
             timing_cnt_en <= '0';
             data_byte <= (others => '0');
             sense_w <= (others => '0');
+            op_code <= (others => '0');
+            mosi_w <= '0';
         elsif rising_edge(clk_internal) then
             case( current_state ) is
-
-                -- decodificare il segnale che arriva
+                ----
+                ---- decodificare il segnale che arriva
                 when idle =>
-                    if send_get_samples_cmd = '1' then
-                        data_byte <= c_op_codes(14);
-                        current_state <= get_op_code;
-                  elsif set_threshold = '1' then
-                        -- ******** to be REVISED ********
-                        -- add states for each lenght of command sent
-                    end if;
-
-                when get_op_code =>
-                    -- ******** to be REVISED ********
-                    -- need to add the operation code decoder.
-                    if data_byte = x"F8" then               current_state <= send_op_code;
+                    -- se arriva un comando attivo il contatore
+                    if or_reduce(spi_cmd) = '1' then        current_state <= send_op_code;
                         timing_cnt_en <= '1';
                     end if;
 
+                    -- decodifica registro spi_cmd
+                    case( spi_cmd ) is
+                        when x"8000" =>
+                            op_code <= c_op_codes(14); -- x"F8"
+                        when others =>
+                            -- ogni bit del registro corrisponde ad un comando
+                            -- se me ne arrivano due contemporaneamente è invalid
+                            current_state <= idle;
+                    end case;
+                ----
+                ----
                 when send_op_code =>
-                    if timing_cnt = 9 then
-                        if data_byte(7) = '1' then          current_state <= rd_from_slv;
-                            sense_w(0) <= miso;
-                        elsif data_byte(7) = '0' then       current_state <= wr_to_slv;
-                        end if;
-                   end if;
+                    -- serialize op_code
+                    if timing_cnt > 0 AND timing_cnt < 9 then
+                        mosi_w <= op_code(8 - conv_integer(timing_cnt));
+                    end if;
+                    -- in base all'op_code, la durata della comunicazione tra
+                    -- master e slave varia
+                    case( op_code ) is
+                        when x"3A" | x"3C" | x"BA" | x"BC" =>
+                            term_cnt <= 26; -- 24 + 2
+                            if timing_cnt >= 9 then
+                                if op_code(7) = '0' then           current_state <= wr_to_slv;
+                                elsif op_code(7) = '1' then        current_state <= rd_from_slv;
+                                    sense_w(0) <= miso;
+                                end if;
+                            end if;
 
+                        when x"F8" =>
+                            term_cnt <= 42; -- 40 + 2
+                            if timing_cnt >= 9 then       current_state <= rd_from_slv;
+                                sense_w(0) <= miso;
+                            end if;
+                        when others =>
+                            term_cnt <= 18; -- 16 + 2
+                    end case;
+                ----
+                ----
                 when rd_from_slv =>
                     if timing_cnt < term_cnt then
                         sense_w(0) <= miso;
@@ -248,9 +267,11 @@ begin
                         timing_cnt_en <= '0';
                     end if;
 
-               -- add code for holt configuration
+                ----
+                ---- add code for holt configuration
                 when wr_to_slv =>
-
+                ----
+                ----
                 when others =>
                     current_state <= idle;
             end case;
@@ -275,7 +296,5 @@ begin
     --
     -- four_slaves : if (number_of_slaves = 4) generate
     -- end generate four_slaves;
-
-
 
 end architecture;

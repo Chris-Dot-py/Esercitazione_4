@@ -1,6 +1,6 @@
-vcom C:/Users/Christian/github/Esercitazione_4/entities/HI_8345.vhd
-vcom C:/Users/Christian/github/Esercitazione_4/entities/spi_master.vhd
-vcom C:/Users/Christian/github/Esercitazione_4/testbenches/tb_1.vhd
+vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
+vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
+vcom C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd
 vsim -gui work.tb_1
 add wave -noupdate -expand -group inputs /tb_1/clock_w
 add wave -noupdate -expand -group inputs /tb_1/reset_w
@@ -17,7 +17,9 @@ add wave -noupdate -expand -group spi_master /tb_1/spi_master_i/current_state
 add wave -noupdate -expand -group spi_master /tb_1/spi_master_i/get_sample_d0
 add wave -noupdate -expand -group spi_master /tb_1/spi_master_i/get_sample_d1
 add wave -noupdate -expand -group spi_master /tb_1/spi_master_i/send_get_samples_cmd
+add wave -noupdate -expand -group spi_master -radix hexadecimal /tb_1/spi_master_i/spi_cmd
 add wave -noupdate -expand -group spi_master -radix hexadecimal /tb_1/spi_master_i/data_byte
+add wave -noupdate -expand -group spi_master -radix hexadecimal /tb_1/spi_master_i/op_code
 add wave -noupdate -expand -group spi_master -radix hexadecimal /tb_1/spi_master_i/sense_w
 add wave -noupdate -expand -group spi_master /tb_1/spi_master_i/sclk_w
 add wave -noupdate -expand -group spi_master /tb_1/spi_master_i/clk_internal

@@ -25,13 +25,14 @@ architecture HI_8345_arch of HI_8345 is
     --------------------------------------------------------------------------------------
     -- constants
     --------------------------------------------------------------------------------------
-    constant c_sense_vals : std_logic_vector(31 downto 0) := x"AA" & x"BB" & x"CC" & x"DD";
 
     --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
     type t_states is (idle, rd_op_code, wr_data, rd_sense_vals);
     signal current_state : t_states := idle;
+
+    signal c_sense_vals : std_logic_vector(31 downto 0) := x"AA" & x"BB" & x"CC" & x"DD";
 
     signal op_code : std_logic_vector(7 downto 0) := (others => '0');
     signal data_byte_1 : std_logic_vector(7 downto 0) := (others => '0');
@@ -44,6 +45,8 @@ architecture HI_8345_arch of HI_8345 is
     signal shift_register : std_logic_vector(7 downto 0) := (others => '0');
     signal miso_w : std_logic := '0';
 begin
+
+
 
     --------------------------------------------------------------------------------------
     -- processes
@@ -84,7 +87,7 @@ begin
                             when x"3A" | x"3C" | x"BA" | x"BC" =>
                                 term_cnt <= 24;
 
-                            when x"F8" =>
+                            when x"F8" => 
                                 term_cnt <= 40;
 
                             when others =>
