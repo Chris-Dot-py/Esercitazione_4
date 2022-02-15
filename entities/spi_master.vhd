@@ -160,7 +160,6 @@ begin
     --------------------------------------------------------------------------------------
     -- To remove
     sense <= sense_w; -- wiring
-
     mosi <= mosi_w;
     p_fsm : process(clk_internal, reset)
     begin
@@ -176,39 +175,66 @@ begin
             sense_w <= (others => '0');
         elsif rising_edge(clk_internal) then
             case( current_state ) is
-                ----
-                ----
+                --======
                 when idle =>
+                --======
                     -- se arriva un comando attivo il contatore
                     if or_reduce(spi_cmd) = '1' then        current_state <= send_op_code;
                         timing_cnt_en <= '1';
+                        -- decodifica registro spi_cmd
+                        case( spi_cmd ) is
+                            when "10000000" =>
+                                op_code <= c_op_codes(0); -- x"02"
+                            when "01000000" =>
+                                op_code <= c_op_codes(1); -- x"04"
+                            when "00100000" =>
+                                op_code <= c_op_codes(2); -- x"3A"
+                                r_data_byte_1 <= data_byte_in;
+                            when "00010000" =>
+                                op_code <= c_op_codes(3); --x"3C"
+                                r_data_byte_1 <= data_byte_in;
+                            when "00001000" =>
+                                op_code <= c_op_codes(4); --x"1E"
+                            when "00000100" =>
+                                op_code <= c_op_codes(9); --x"9E"
+                            when "00000010" =>
+                                op_code <= c_op_codes(14); --x"F8"
+                            when others =>
+                                -- ogni bit del registro corrisponde ad un comando
+                                -- se me ne arrivano due contemporaneamente è invalid
+                                current_state <= idle;
+                        end case;
+                    elsif or_reduce(rd_regs) = '1' then     current_state <= send_op_code;
+                        timing_cnt_en <= '1';
+                        case( rd_regs ) is
+                            when "10000000" =>
+                                op_code <= c_op_codes(5); -- x"82"
+                            when "01000000" =>
+                                op_code <= c_op_codes(6); -- x"84"
+                            when "00100000" =>
+                                op_code <= c_op_codes(7); -- x"BA"
+                                r_data_byte_1 <= data_byte_in;
+                            when "00010000" =>
+                                op_code <= c_op_codes(8); --x"BC"
+                                r_data_byte_1 <= data_byte_in;
+                            when "00001000" =>
+                                op_code <= c_op_codes(10); --x"90"
+                            when "00000100" =>
+                                op_code <= c_op_codes(11); --x"92"
+                            when "00000010" =>
+                                op_code <= c_op_codes(12); --x"94"
+                            when "00000001" =>
+                                op_code <= c_op_codes(13); --x"96"
+                            when others =>
+                                -- ogni bit del registro corrisponde ad un comando
+                                -- se me ne arrivano due contemporaneamente è invalid
+                                current_state <= idle;
+                        end case;
                     end if;
-                    -- decodifica registro spi_cmd
-                    case( spi_cmd ) is
-                        when "10000000" =>
-                            op_code <= c_op_codes(0); -- x"02"
-                        when "01000000" =>
-                            op_code <= c_op_codes(1); -- x"04"
-                        when "00100000" =>
-                            op_code <= c_op_codes(2); -- x"3A"
-                            r_data_byte_1 <= data_byte_in;
-                        when "00010000" =>
-                            op_code <= c_op_codes(3); --x"3C"
-                            r_data_byte_1 <= data_byte_in;
-                        when "00001000" =>
-                            op_code <= c_op_codes(4); --x"1E"
-                        when "00000100" =>
-                            op_code <= c_op_codes(9); --x"9E"
-                        when "00000010" =>
-                            op_code <= c_op_codes(14); --x"F8"
-                        when others =>
-                            -- ogni bit del registro corrisponde ad un comando
-                            -- se me ne arrivano due contemporaneamente è invalid
-                            current_state <= idle;
-                    end case;
-                ----
-                ----
+
+                --======
                 when send_op_code =>
+                --======
                     -- calculate center val and hysteresis
                     if op_code = x"3A" OR op_code = x"3C" then
                         r_data_byte_0 <= data_byte_in;
@@ -266,9 +292,10 @@ begin
                                 end if;
                             end if;
                     end case;
-                ----
-                ----
+
+                --======
                 when rd_from_slv =>
+                --======
                     if timing_cnt < term_cnt then
                         -- shift register
                         sense_w(0) <= miso;
@@ -278,9 +305,10 @@ begin
                     elsif timing_cnt = term_cnt then           current_state <= idle;
                         timing_cnt_en <= '0';
                     end if;
-                ----
-                ----
+
+                --======
                 when wr_to_slv =>
+                --======
                     if timing_cnt < term_cnt-1 then
                         -- serialize to mosi
                         case( op_code ) is
@@ -298,9 +326,10 @@ begin
                     elsif timing_cnt = term_cnt then           current_state <= idle;
                         timing_cnt_en <= '0';
                     end if;
-                ----
-                ----
+
+                --======
                 when others =>
+                --======
                     current_state <= idle;
             end case;
 
