@@ -8,6 +8,9 @@ use std.textio.all;
 
 library work;
 
+------------------------------------------------------------------------------------------
+-- add registers for the sanitization process
+------------------------------------------------------------------------------------------
 entity HI_8345 is
     port(
         sclk : in std_logic;
@@ -92,11 +95,26 @@ begin
                     end if;
 
                 when rd_data =>
-                    if cnt < term_cnt-1 then
-                        miso_w <= c_sense_vals(38 - cnt);
-                   elsif cnt = term_cnt-1 then                  current_state <= idle;
-                        miso_w <= 'Z';
-                   end if;
+                    case( op_code ) is
+
+                        when x"9E" =>
+                            -- temporary reg
+                            if cnt < term_cnt-1 then
+                                miso_w <= data_byte_1(14 - cnt);
+                            elsif cnt = term_cnt-1 then                  current_state <= idle;
+                                miso_w <= 'Z';
+                            end if;
+                        when x"F8" =>
+                            if cnt < term_cnt-1 then
+                                miso_w <= c_sense_vals(38 - cnt);
+                            elsif cnt = term_cnt-1 then                  current_state <= idle;
+                                miso_w <= 'Z';
+                            end if;
+
+                        when others =>
+                            miso_w <= 'Z';
+
+                    end case;
 
                 when wr_data =>
                     -- **** TO BE REVISED ****

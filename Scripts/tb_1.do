@@ -4,15 +4,12 @@ vcom C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd
 vsim -gui work.tb_1
 configure wave -namecolwidth 207
 configure wave -valuecolwidth 100
-add wave -noupdate -expand -group inputs -label {clock ( 100 MHz )} /tb_1/clock_w
-add wave -noupdate -expand -group inputs -label reset /tb_1/reset_w
-add wave -noupdate -expand -group inputs -label set_ctrl /tb_1/spi_master_i/set_ctrl
-add wave -noupdate -expand -group inputs -label get_sample /tb_1/spi_master_i/get_sample
-add wave -noupdate -expand -group inputs -label set_thresholds(1) /tb_1/spi_master_i/set_thresholds(1)
-add wave -noupdate -expand -group inputs -label set_thresholds(0) /tb_1/spi_master_i/set_thresholds(0)
-add wave -noupdate -expand -group inputs -label hyst_val -radix hexadecimal /tb_1/spi_master_i/hyst_val
-add wave -noupdate -expand -group inputs -label center_val -radix hexadecimal /tb_1/spi_master_i/center_val
-add wave -noupdate -expand -group inputs -label set_psen_w /tb_1/set_psen_W
+add wave -noupdate -expand -group inputs -label {clock ( 100 MHz )} /tb_1/clock
+add wave -noupdate -expand -group inputs -label reset /tb_1/reset
+add wave -noupdate -expand -group spi_bus -label spi_cmd /tb_1/spi_master_i/spi_cmd
+add wave -noupdate -expand -group spi_bus -label data_byte_in -radix hexadecimal /tb_1/spi_master_i/data_byte_in
+add wave -noupdate -expand -group spi_bus -label data_byte_1 -radix hexadecimal /tb_1/spi_master_i/r_data_byte_1
+add wave -noupdate -expand -group spi_bus -label data_byte_0 -radix hexadecimal /tb_1/spi_master_i/r_data_byte_0
 add wave -noupdate -expand -group spi_bus -label {sclk ( 16.666 MHz )} /tb_1/spi_master_i/sclk
 add wave -noupdate -expand -group spi_bus -label mosi /tb_1/spi_master_i/mosi
 add wave -noupdate -expand -group spi_bus -label miso /tb_1/spi_master_i/miso
@@ -38,4 +35,4 @@ add wave -noupdate -expand -group {holt sensor} -label {shift register} -radix h
 add wave -noupdate -expand -group {holt sensor} -label miso /tb_1/HI_8345_i/miso_w
 add wave -noupdate -expand -group {holt sensor} -label {current state} /tb_1/HI_8345_i/current_state
 WaveRestoreZoom {0 ps} {25 us}
-run 25 us
+run 52 us

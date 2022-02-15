@@ -10,141 +10,141 @@ z2
 cModel Technology
 dC:/Users/Christian/github/Esercitazione_4/scripts
 Ehi_8345
-Z0 w1644857385
+Z0 w1644922969
 Z1 DPx4 ieee 16 std_logic_textio 0 22 ^l:n6VFdg74Q?CKDhjD]D3
 Z2 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
 Z3 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
 Z4 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
 Z5 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
-!i122 508
+!i122 729
 Z6 dC:/Users/christian.manuel/github/Esercitazione_4/Scripts
 Z7 8C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
 Z8 FC:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
 l0
-Z9 L11 1
-VWJQ:zbhGnlRQl?nA73NO?2
-!s100 iKo9eeVOnIo_ImL29RGzm0
-Z10 OV;C;2020.1;71
+L14 1
+VndOeg1^J3UY];H8=f>5J?3
+!s100 ]c=`h2A4z0M8mPJX5aT;=0
+Z9 OV;C;2020.1;71
 32
-Z11 !s110 1644857877
+Z10 !s110 1644923475
 !i10b 1
-Z12 !s108 1644857877.000000
-Z13 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd|
-Z14 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd|
+Z11 !s108 1644923475.000000
+Z12 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd|
+Z13 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd|
 !i113 1
-Z15 tExplicit 1 CvgOpt 0
+Z14 tExplicit 1 CvgOpt 0
 Ahi_8345_arch
 R1
 R2
 R3
 R4
 R5
-DEx4 work 7 hi_8345 0 22 WJQ:zbhGnlRQl?nA73NO?2
-!i122 508
-l39
-L20 107
-VU7@nX7^Da>ch4]1K785]71
-!s100 5U@f>`2202a;o1@QYeT[F1
-R10
+DEx4 work 7 hi_8345 0 22 ndOeg1^J3UY];H8=f>5J?3
+!i122 729
+l42
+L23 122
+V2]INlHJXRMfSLV>Xc=eTE1
+!s100 SmG6=05=lnm3U4W5Z@VGZ3
+R9
 32
-R11
+R10
 !i10b 1
+R11
 R12
 R13
-R14
 !i113 1
-R15
+R14
 Espi_master
-Z16 w1644856651
-Z17 DPx8 synopsys 10 attributes 0 22 dc>JdEHRM@6GGENe5bZ?D1
-Z18 DPx4 ieee 14 std_logic_misc 0 22 dN]HY6l5ohPcZ:TaC@B;53
+Z15 w1644923350
+Z16 DPx8 synopsys 10 attributes 0 22 dc>JdEHRM@6GGENe5bZ?D1
+Z17 DPx4 ieee 14 std_logic_misc 0 22 dN]HY6l5ohPcZ:TaC@B;53
 R1
 R2
 R3
 R4
 R5
-!i122 509
+!i122 730
 R6
-Z19 8C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
-Z20 FC:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
+Z18 8C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
+Z19 FC:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
 l0
-L37 1
-VJ7=Wa]DQCdJ=MR0I1D@262
-!s100 8CafVWOhTmVYn2`5Y[Xo[2
-R10
+L30 1
+VzQKLX0NfBRX77Vf72a0fl1
+!s100 LzMg7HX;PBB12OV?]@TeB2
+R9
 32
-R11
+Z20 !s110 1644923476
 !i10b 1
-R12
+R11
 Z21 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
 Z22 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
 !i113 1
-R15
+R14
 Aspi_master_arch
+R16
 R17
-R18
 R1
 R2
 R3
 R4
 R5
-DEx4 work 10 spi_master 0 22 J7=Wa]DQCdJ=MR0I1D@262
-!i122 509
-l110
-L66 285
-V4=kAAj]f5<`BJ[>kg1j`o2
-!s100 MSf0SP^^Yol@j8zKlWBTB0
-R10
+DEx4 work 10 spi_master 0 22 zQKLX0NfBRX77Vf72a0fl1
+!i122 730
+l87
+L50 279
+V_IeZmF3:PFK@Qm=JKLlE90
+!s100 DIV=mYDPHf8;R=3CdN2z=3
+R9
 32
-R11
+R20
 !i10b 1
-R12
+R11
 R21
 R22
 !i113 1
-R15
+R14
 Etb_1
-Z23 w1644857253
+Z23 w1644923175
 R1
 R2
 R3
 R4
 R5
-!i122 510
+!i122 731
 R6
 Z24 8C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd
 Z25 FC:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd
 l0
-R9
+L11 1
 V^bkClI[:[7jd>nL8D_n0=0
 !s100 fEGH;QZN@2:RmAhEDSn092
-R10
+R9
 32
-R11
+R20
 !i10b 1
-R12
-Z26 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd|
-Z27 !s107 C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd|
+Z26 !s108 1644923476.000000
+Z27 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd|
+Z28 !s107 C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd|
 !i113 1
-R15
+R14
 Atb_1_arch
 R1
 R2
 R3
 R4
 R5
-Z28 DEx4 work 4 tb_1 0 22 ^bkClI[:[7jd>nL8D_n0=0
-!i122 510
-l82
-Z29 L14 168
-Z30 Vj5YD;^8^1Qj?K02Ck=L0:3
-Z31 !s100 J><2_n@b0IEBmjl`Tkld<3
-R10
+Z29 DEx4 work 4 tb_1 0 22 ^bkClI[:[7jd>nL8D_n0=0
+!i122 731
+l91
+Z30 L14 201
+Z31 VE_?8fRH6G0RNI4PdS:0JT0
+Z32 !s100 mXU[m8IFP^8YSV5YHZ94g0
+R9
 32
-R11
+R20
 !i10b 1
-R12
 R26
 R27
+R28
 !i113 1
-R15
+R14
