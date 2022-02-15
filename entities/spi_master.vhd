@@ -1,16 +1,8 @@
 ------------------------------------------------------------------------------------------
--- MODIFICHE DA FARE:
--- Il codice attualmente legge valori in ritardo di circa 90us.
--- sarebbe meglio leggere valori poco PRIMA del rising edge del clock da 10KHz
+-- this spi master is specific to HI-8435
+-- NOTE: between "spi_cmd" and "rd_regs" ONLY ONE can be active each time.
 --
--- funzionamento base di std_discr_if:
--- soglie configurabili da 2V a 22V       [_]
--- frequenza di campionamento pari a 10KHz      [_]
--- std_discr_io riconfigurabile come ingresso/uscita     [_]
-
--- quando si configura l'holt, mando un impulso di avvio configurazione
--- seguito dal comando di settaggio dei sense banks psen
--- seguito dal comando del settaggio di isteresi e central value
+-- 
 ------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -20,13 +12,8 @@ use ieee.std_logic_textio.all;
 use ieee.std_logic_misc.all;
 library std;
 use std.textio.all;
-
 library work;
 
-------------------------------------------------------------------------------------------
--- this spi master is specific to HI-8435
--- NOTE: between "spi_cmd" and "rd_regs" ONLY ONE can be active each time.
-------------------------------------------------------------------------------------------
 entity spi_master is
     generic(number_of_slaves : integer := 1);
     port (
@@ -43,7 +30,7 @@ entity spi_master is
         sclk         : out std_logic;
         mosi         : out std_logic;
         miso         : in  std_logic;
-        csn          : out std_logic_vector(number_of_slaves-1 downto 0)
+        csn          : out std_logic
     );
 end entity spi_master;
 
@@ -154,6 +141,10 @@ begin
             end if;
         end if;
     end process;
+
+    -- active low chip select
+    csn <= not or_reduce(timing_cnt) when slv_addr = "0" else
+                    'Z';
 
     --------------------------------------------------------------------------------------
     -- fsm
@@ -335,23 +326,5 @@ begin
 
         end if;
     end process;
-
-    --------------------------------------------------------------------------------------
-    -- slave management
-    --------------------------------------------------------------------------------------
-    csn <= csn_w;
-    one_slave : if (number_of_slaves = 1) generate
-        csn_w(0) <= not or_reduce(timing_cnt) when slv_addr = "0" else
-                    'Z';
-    end generate one_slave;
-
-    -- two_slaves : if (number_of_slaves = 2) generate
-    -- end generate two_slaves;
-    --
-    -- three_slaves : if (number_of_slaves = 3) generate
-    -- end generate three_slaves;
-    --
-    -- four_slaves : if (number_of_slaves = 4) generate
-    -- end generate four_slaves;
 
 end architecture;

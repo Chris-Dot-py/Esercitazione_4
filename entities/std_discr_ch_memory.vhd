@@ -7,14 +7,14 @@ library std;
 use std.textio.all;
 library work;
 
-entity temp is
+entity std_discr_ch_memory is
     port(
         clock : in std_logic;
         reset : in std_logic
     );
-end entity temp;
+end entity std_discr_ch_memory;
 
-architecture temp_arch of temp is
+architecture std_discr_ch_memory_arch of std_discr_ch_memory is
     --------------------------------------------------------------------------------------
     -- component declarations
     --------------------------------------------------------------------------------------

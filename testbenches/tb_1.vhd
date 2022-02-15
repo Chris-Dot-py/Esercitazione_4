@@ -32,19 +32,16 @@ architecture tb_1_arch of tb_1 is
       sclk          : out std_logic;
       mosi          : out std_logic;
       miso          : in  std_logic;
-      csn           : out std_logic_vector(number_of_slaves-1 downto 0)
+      csn           : out std_logic
     );
     end component spi_master;
-
-
-
 
     component HI_8345
     port (
       sclk : in  std_logic;
       mosi : in  std_logic;
       miso : out std_logic;
-      csn  : in  std_logic_vector
+      csn  : in  std_logic
     );
     end component HI_8345;
 
@@ -68,13 +65,12 @@ architecture tb_1_arch of tb_1 is
     signal data_byte_out     : std_logic_vector(7 downto 0);
     signal slv_addr       : std_logic_vector(c_number_of_slaves-1 downto 0):= "0";
 
-
     signal sense          : std_logic_vector(31 downto 0); -- to remove
 
     signal sclk           : std_logic;
     signal mosi           : std_logic;
     signal miso           : std_logic;
-    signal csn            : std_logic_vector(c_number_of_slaves-1 downto 0);
+    signal csn            : std_logic;
 
     -- spi_cmd
     signal set_ctrl       : std_logic := '0';

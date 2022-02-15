@@ -16,7 +16,7 @@ entity HI_8345 is
         sclk : in std_logic;
         mosi : in std_logic;
         miso : out std_logic;
-        csn : in std_logic_vector(0 downto 0)
+        csn : in std_logic
     );
 end entity HI_8345;
 
@@ -60,7 +60,7 @@ begin
     p_acquire : process(sclk)
     begin
         if rising_edge(sclk) then
-            if csn(0) = '0' then
+            if csn = '0' then
                 -- shift register
                 shift_register(0) <= mosi;
                 for i in 0 to 6 loop
@@ -76,9 +76,9 @@ begin
     -- fsm
     --------------------------------------------------------------------------------------
     miso <= miso_w;
-    p_fsm : process(sclk,csn(0))
+    p_fsm : process(sclk,csn)
     begin
-        if csn(0) = '1' then
+        if csn = '1' then
             current_state <= idle;
             miso_w <= 'Z';
             cnt <= 0;
