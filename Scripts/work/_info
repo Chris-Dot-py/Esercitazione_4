@@ -16,7 +16,7 @@ Z2 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
 Z3 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
 Z4 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
 Z5 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
-!i122 1264
+!i122 1328
 Z6 dC:/Users/christian.manuel/github/Esercitazione_4/Scripts
 Z7 8C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
 Z8 FC:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
@@ -26,9 +26,9 @@ VJbb29hL6n=QQX8R1YhioH0
 !s100 C`@Z9h4kkFZ@dLg]>PCDR2
 Z9 OV;C;2020.1;71
 32
-Z10 !s110 1645030466
+Z10 !s110 1645047344
 !i10b 1
-Z11 !s108 1645030465.000000
+Z11 !s108 1645047344.000000
 Z12 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd|
 Z13 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd|
 !i113 1
@@ -40,7 +40,7 @@ R3
 R4
 R5
 DEx4 work 7 hi_8345 0 22 Jbb29hL6n=QQX8R1YhioH0
-!i122 1264
+!i122 1328
 l56
 L23 212
 V52hj^P7gkn6g[oVb0<KFL3
@@ -63,7 +63,7 @@ R2
 R3
 R4
 R5
-!i122 1265
+!i122 1329
 R6
 Z18 8C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
 Z19 FC:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
@@ -75,9 +75,9 @@ R9
 32
 R10
 !i10b 1
-Z20 !s108 1645030466.000000
-Z21 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
-Z22 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
+R11
+Z20 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
+Z21 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
 !i113 1
 R14
 Aspi_master_arch
@@ -89,7 +89,7 @@ R3
 R4
 R5
 DEx4 work 10 spi_master 0 22 @dmgNjdkBezeZAaCnc8@I3
-!i122 1265
+!i122 1329
 l78
 L40 304
 V7fKVF7`z^okYo]U1f>H]b1
@@ -98,31 +98,31 @@ R9
 32
 R10
 !i10b 1
+R11
 R20
 R21
-R22
 !i113 1
 R14
 Estd_discr_ch_memory
-Z23 w1645030464
+Z22 w1645047342
 R1
 R2
 R3
 R4
 R5
-!i122 1266
+!i122 1330
 R6
-Z24 8C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd
-Z25 FC:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd
+Z23 8C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd
+Z24 FC:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd
 l0
 L10 1
-Vzm=HP3LINkW?d75SYkQzz0
-!s100 FCEPBW6@d7m[]Z0jQo9332
+V7Q>1nD6K0P:SS]KG[a7c=1
+!s100 mh=U6^jz;4XdT6XDDWd1K0
 R9
 32
-R10
+Z25 !s110 1645047345
 !i10b 1
-R20
+R11
 Z26 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd|
 Z27 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd|
 !i113 1
@@ -133,17 +133,17 @@ R2
 R3
 R4
 R5
-DEx4 work 19 std_discr_ch_memory 0 22 zm=HP3LINkW?d75SYkQzz0
-!i122 1266
-l51
-L28 105
-VLOCJACRU1ACQIMkGRNNL]0
-!s100 PK[[AV>TLg?[_1JJ5Vzf60
+DEx4 work 19 std_discr_ch_memory 0 22 7Q>1nD6K0P:SS]KG[a7c=1
+!i122 1330
+l47
+L28 86
+VA2_XTBfZYS?R_jz15CZWU2
+!s100 ^YD[iTinlTQd:ENQW0DBY3
 R9
 32
-R10
+R25
 !i10b 1
-R20
+R11
 R26
 R27
 !i113 1
@@ -194,13 +194,13 @@ R35
 !i113 1
 R14
 Etb_2
-Z36 w1645029734
+Z36 w1645047108
 R1
 R2
 R3
 R4
 R5
-!i122 1267
+!i122 1331
 R6
 Z37 8C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd
 Z38 FC:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd
@@ -210,9 +210,9 @@ VdMijAJdcaF9dgFAbOVdMP2
 !s100 Xo_`>NQGHjDj<]iHmc9zN0
 R9
 32
-Z39 !s110 1645030467
+R25
 !i10b 1
-R20
+Z39 !s108 1645047345.000000
 Z40 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd|
 Z41 !s107 C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd|
 !i113 1
@@ -224,16 +224,16 @@ R3
 R4
 R5
 Z42 DEx4 work 4 tb_2 0 22 dMijAJdcaF9dgFAbOVdMP2
-!i122 1267
+!i122 1331
 l117
-Z43 L14 243
-Z44 VZo=C?To34cP43Je5<hKM>2
-Z45 !s100 Cz2EK]S[79W1RazXmi7i]1
+Z43 L14 255
+Z44 V_V6254A_TaEV?Tdd0Y?ff3
+Z45 !s100 R2KLK2TiB>iN7Y=B3R6QM1
 R9
 32
-R39
+R25
 !i10b 1
-R20
+R39
 R40
 R41
 !i113 1

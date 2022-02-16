@@ -13,7 +13,7 @@ entity std_discr_ch_memory is
         clock : in std_logic; -- use 16.666MHz clock
         reset : in std_logic;
 
-        extract_data : in std_logic; -- when 1, switch FIFO
+        rd_op : in std_logic; -- when 1, switch FIFO
 
         wr_op : in std_logic; -- use data_ready
         wr_data : in std_logic; -- sense(n)
@@ -35,10 +35,6 @@ architecture std_discr_ch_memory_arch of std_discr_ch_memory is
     type t_bits_stored_tracker is array (0 to 1) of std_logic_vector(3 downto 0);
     signal bits_stored : t_bits_stored_tracker;
 
-
-
-    signal rd_op : std_logic;
-
     signal wr_index : std_logic_vector(3 downto 0);
     signal FIFO_switch : std_logic;
     signal busy_unloading_FIFO : std_logic;
@@ -52,19 +48,6 @@ begin
     --------------------------------------------------------------------------------------
     -- processes
     --------------------------------------------------------------------------------------
-    p_extract_bits : process(clock, reset)
-    begin
-        if reset = '0' then
-            rd_op <= '0';
-        elsif rising_edge(clock) then
-            if extract_data = '1' then
-                rd_op <= '1';
-            elsif cnt = bits_stored(conv_integer(busy_unloading_FIFO)) then
-                rd_op <= '0';
-            end if;
-        end if;
-    end process;
-
     rd_data <= rd_data_w;
     o_bits_stored <= bits_stored(conv_integer(busy_unloading_FIFO));
     P_fifo : process(clock, reset)
@@ -94,7 +77,7 @@ begin
             end if;
 
             -- gestione wr_index
-            if wr_op = '1' AND extract_data = '1' then
+            if wr_op = '1' AND rd_op = '1' then
                 wr_index <= x"E";
             elsif wr_op = '1' and rd_op = '0' then
                 wr_index <= wr_index - 1;
@@ -105,24 +88,22 @@ begin
             -- when reading: freeze fifo and switch to the other fifo
             -- and shift out to the last bit inserted
             if rd_op = '1' then
-                if cnt_en = '0' then
-                    cnt_en <= '1';
-                    cnt <= (others => '0');
-                    busy_unloading_FIFO <= FIFO_switch;
-                    FIFO_switch <= not FIFO_switch;
+                cnt_en <= '1';
+                cnt <= (others => '0');
+                busy_unloading_FIFO <= FIFO_switch;
+                FIFO_switch <= not FIFO_switch;
+            elsif cnt_en = '1' then
+                if cnt < bits_stored(conv_integer(busy_unloading_FIFO)) then
+                    rd_data_w <= bit_FIFO(conv_integer(busy_unloading_FIFO))(15);
+                    bit_FIFO(conv_integer(busy_unloading_FIFO))(0) <= '0';
+                    for i in 0 to 14 loop
+                        bit_FIFO(conv_integer(busy_unloading_FIFO))(i + 1) <= bit_FIFO(conv_integer(busy_unloading_FIFO))(i);
+                    end loop;
+                    cnt <= cnt + 1;
                 else
-                    if cnt < bits_stored(conv_integer(busy_unloading_FIFO)) then
-                        rd_data_w <= bit_FIFO(conv_integer(busy_unloading_FIFO))(15);
-                        bit_FIFO(conv_integer(busy_unloading_FIFO))(0) <= '0';
-                        for i in 0 to 14 loop
-                            bit_FIFO(conv_integer(busy_unloading_FIFO))(i + 1) <= bit_FIFO(conv_integer(busy_unloading_FIFO))(i);
-                        end loop;
-                        cnt <= cnt + 1;
-                    else
-                        cnt_en <= '0';
-                        cnt <= (others => '0');
-                        bits_stored(conv_integer(busy_unloading_FIFO)) <= (others => '0');
-                    end if;
+                    cnt_en <= '0';
+                    cnt <= (others => '0');
+                    bits_stored(conv_integer(busy_unloading_FIFO)) <= (others => '0');
                 end if;
             end if;
 

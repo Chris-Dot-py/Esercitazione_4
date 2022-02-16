@@ -49,7 +49,7 @@ add wave -noupdate -group {holt sensor} -group {holt regs} -label SSB1 -radix he
 add wave -noupdate -group {holt sensor} -group {holt regs} -label SSB2 -radix hexadecimal /tb_2/HI_8345_i/r_SSB_2
 add wave -noupdate -group {holt sensor} -group {holt regs} -label SSB3 -radix hexadecimal /tb_2/HI_8345_i/r_SSB_3
 add wave -noupdate -group {holt sensor} -label {current state} /tb_2/HI_8345_i/current_state
-add wave -noupdate -expand -group std_discr_ch_memory -label {extract data} /tb_2/std_discr_ch_memory_i/extract_data
+add wave -noupdate -expand -group std_discr_ch_memory -label {rd_op} /tb_2/std_discr_ch_memory_i/rd_op
 add wave -noupdate -expand -group std_discr_ch_memory -label wr_op /tb_2/std_discr_ch_memory_i/wr_op
 add wave -noupdate -expand -group std_discr_ch_memory -label wr_data /tb_2/std_discr_ch_memory_i/wr_data
 add wave -noupdate -expand -group std_discr_ch_memory -label rd_data /tb_2/std_discr_ch_memory_i/rd_data

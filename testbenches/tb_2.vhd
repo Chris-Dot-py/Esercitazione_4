@@ -53,7 +53,7 @@ architecture tb_2_arch of tb_2 is
     port (
       clock        : in  std_logic;
       reset        : in  std_logic;
-      extract_data : in  std_logic;
+      rd_op : in  std_logic;
       wr_op        : in  std_logic;
       wr_data      : in  std_logic;
       rd_data      : out std_logic;
@@ -107,7 +107,7 @@ architecture tb_2_arch of tb_2 is
     signal rd_r_SSB3    : std_logic := '0';
 
     -- mem
-    signal extract_data : std_logic := '0';    -- signal for creating block data to backbone master
+    signal rd_op : std_logic := '0';    -- signal for creating block data to backbone master
     signal wr_op        : std_logic;    -- data_ready
     signal wr_data      : std_logic;    -- sense(n)
     signal rd_data      : std_logic;    -- => shift_reg(0)
@@ -168,7 +168,7 @@ begin
     port map (
       clock        => clock_16MHz,
       reset        => reset,
-      extract_data => extract_data,
+      rd_op => rd_op,
       wr_op        => data_ready,
       wr_data      => sense(31),
       rd_data      => rd_data,
@@ -202,26 +202,7 @@ begin
     -- suppongo che prima di mandare l'impulso del comando, ho gia i dati pronti da passare
     -- al master da serializzare
     --------------------------------------------------------------------------------------
-    p_extract_data : process
-    begin
-        -- extract_data
-        wait for 22835 ns;
-        extract_data <= '1';
-        wait until rising_edge(clock_16MHz);
-        wait for 30 ns;
-        extract_data <= '0';
-        wait until rising_edge(clock_16MHz);
 
-        for i in 1 to conv_integer(o_bits_stored) + 2 loop
-            sense_31_vals(0) <= rd_data;
-            for i in 0 to 14 loop
-                sense_31_vals(i+1) <= sense_31_vals(i);
-            end loop;
-            wait until rising_edge(clock_16MHz);
-        end loop;
-
-
-    end process;
 
     p_signals : process
     begin
@@ -234,6 +215,21 @@ begin
             rd_all_ssb <= '0';
         end loop;
 
+        -- rd_op
+        rd_op <= '1';
+        wait until rising_edge(clock_16MHz);
+        wait for 30 ns;
+        rd_op <= '0';
+        wait until rising_edge(clock_16MHz);
+
+        for i in 1 to conv_integer(o_bits_stored) + 2 loop
+            sense_31_vals(0) <= rd_data;
+            for i in 0 to 14 loop
+                sense_31_vals(i+1) <= sense_31_vals(i);
+            end loop;
+            wait until rising_edge(clock_16MHz);
+        end loop;
+
         -- store data
         for i in 0 to 8 loop
             wait for 1 us;
@@ -242,6 +238,22 @@ begin
             wait until rising_edge(busy);
             rd_all_ssb <= '0';
         end loop;
+
+        -- rd_op
+        rd_op <= '1';
+        wait until rising_edge(clock_16MHz);
+        wait for 30 ns;
+        rd_op <= '0';
+        wait until rising_edge(clock_16MHz);
+
+        for i in 1 to conv_integer(o_bits_stored) + 2 loop
+            sense_31_vals(0) <= rd_data;
+            for i in 0 to 14 loop
+                sense_31_vals(i+1) <= sense_31_vals(i);
+            end loop;
+            wait until rising_edge(clock_16MHz);
+        end loop;
+
         wait;
     end process;
 
