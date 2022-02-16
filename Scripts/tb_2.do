@@ -66,4 +66,4 @@ add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} 
 add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label cnt -radix hexadecimal /tb_2/std_discr_ch_memory_i/cnt
 add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label sense_31_vals -radix binary /tb_2/sense_31_vals
 WaveRestoreZoom {0 ps} {25 us}
-run 70 us
+run 150 us

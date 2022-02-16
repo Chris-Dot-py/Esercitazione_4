@@ -202,7 +202,18 @@ begin
     -- suppongo che prima di mandare l'impulso del comando, ho gia i dati pronti da passare
     -- al master da serializzare
     --------------------------------------------------------------------------------------
-
+    -- process
+    -- begin
+    --
+    -- wait until falling_edge(rd_op);
+    -- for i in 1 to conv_integer(o_bits_stored) + 2 loop
+    --     sense_31_vals(0) <= rd_data;
+    --     for i in 0 to 14 loop
+    --         sense_31_vals(i+1) <= sense_31_vals(i);
+    --     end loop;
+    --     wait until rising_edge(clock_16MHz);
+    -- end loop;
+    -- end process;
 
     p_signals : process
     begin
@@ -216,19 +227,10 @@ begin
         end loop;
 
         -- rd_op
+        wait until rising_edge(clock_16MHz);
         rd_op <= '1';
         wait until rising_edge(clock_16MHz);
-        wait for 30 ns;
         rd_op <= '0';
-        wait until rising_edge(clock_16MHz);
-
-        for i in 1 to conv_integer(o_bits_stored) + 2 loop
-            sense_31_vals(0) <= rd_data;
-            for i in 0 to 14 loop
-                sense_31_vals(i+1) <= sense_31_vals(i);
-            end loop;
-            wait until rising_edge(clock_16MHz);
-        end loop;
 
         -- store data
         for i in 0 to 8 loop
@@ -240,19 +242,26 @@ begin
         end loop;
 
         -- rd_op
+        wait until rising_edge(clock_16MHz);
         rd_op <= '1';
         wait until rising_edge(clock_16MHz);
-        wait for 30 ns;
         rd_op <= '0';
-        wait until rising_edge(clock_16MHz);
 
-        for i in 1 to conv_integer(o_bits_stored) + 2 loop
-            sense_31_vals(0) <= rd_data;
-            for i in 0 to 14 loop
-                sense_31_vals(i+1) <= sense_31_vals(i);
-            end loop;
-            wait until rising_edge(clock_16MHz);
+        -- store data
+        for i in 0 to 8 loop
+            wait for 1 us;
+            wait for 3 us;
+            rd_all_ssb <= '1';
+            if i = 6 then
+                wait until rising_edge(data_ready);
+                rd_op <= '1';
+                wait until rising_edge(clock_16MHz);
+                rd_op <= '0';
+            end if;
+            wait until rising_edge(busy);
+            rd_all_ssb <= '0';
         end loop;
+
 
         wait;
     end process;
