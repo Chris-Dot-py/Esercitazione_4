@@ -26,13 +26,14 @@ architecture tb_1_arch of tb_1 is
       spi_cmd       : in  std_logic_vector(7 downto 0);
       rd_regs       : in  std_logic_vector(7 downto 0);
       data_byte_in  : in  std_logic_vector(7 downto 0);
-      data_byte_out : out std_logic_vector(7 downto 0);
       slv_addr      : in  std_logic_vector(number_of_slaves-1 downto 0);
       sense         : out std_logic_vector(31 downto 0);
+      data_ready    : out std_logic;
       sclk          : out std_logic;
       mosi          : out std_logic;
       miso          : in  std_logic;
-      csn           : out std_logic
+      csn           : out std_logic;
+      clock_16MHz : out std_logic
     );
     end component spi_master;
 
@@ -57,15 +58,14 @@ architecture tb_1_arch of tb_1 is
     signal LO_threshold   : integer range 4 to 42 := 9;
 
     signal clock          : std_logic;
+    signal clock_16MHz    : std_logic;
     signal reset          : std_logic;
     signal busy           : std_logic;
-    signal spi_cmd        : std_logic_vector(7 downto 0);
-    signal rd_regs        : std_logic_vector(7 downto 0);
     signal data_byte_in     : std_logic_vector(7 downto 0) := "00000000";
-    signal data_byte_out     : std_logic_vector(7 downto 0);
     signal slv_addr       : std_logic_vector(c_number_of_slaves-1 downto 0):= "0";
 
-    signal sense          : std_logic_vector(31 downto 0); -- to remove
+    signal sense          : std_logic_vector(31 downto 0);
+    signal data_ready     : std_logic;
 
     signal sclk           : std_logic;
     signal mosi           : std_logic;
@@ -100,6 +100,7 @@ begin
     )
     port map (
         clock         => clock,
+        clock_16MHz   => clock_16MHz,
         reset         => reset,
         busy          => busy,
         spi_cmd(7) => set_ctrl,
@@ -119,9 +120,9 @@ begin
         rd_regs(1)        => rd_r_SSB2,
         rd_regs(0)        => rd_r_SSB3,
         data_byte_in  => data_byte_in,
-        data_byte_out => data_byte_out,
         slv_addr      => slv_addr,
         sense         => sense,
+        data_ready    => data_ready,
         sclk          => sclk,
         mosi          => mosi,
         miso          => miso,

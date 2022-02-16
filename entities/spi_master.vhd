@@ -2,7 +2,7 @@
 -- this spi master is specific to HI-8435
 -- NOTE: between "spi_cmd" and "rd_regs" ONLY ONE can be active each time.
 --
--- 
+-- PORTARE FUORI DIVISORE CLOCK
 ------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -23,14 +23,17 @@ entity spi_master is
         spi_cmd      : in std_logic_vector(7 downto 0); -- registro per comandi
         rd_regs      : in std_logic_vector(7 downto 0); -- registro per comandi di lettura
         data_byte_in : in std_logic_vector(7 downto 0); -- registro per dati da trasmettere
-        data_byte_out: out std_logic_vector(7 downto 0); -- registro per dati ricevuti
         slv_addr     : in  std_logic_vector(number_of_slaves-1 downto 0); -- indirizzo slave
         sense        : out std_logic_vector(31 downto 0);   -- da sistemare -> data_byte_out
+        data_ready   : out std_logic;
         -- spi bus
         sclk         : out std_logic;
         mosi         : out std_logic;
         miso         : in  std_logic;
-        csn          : out std_logic
+        csn          : out std_logic;
+
+        -- temporary: to be revised
+        clock_16MHz : out std_logic
     );
 end entity spi_master;
 
@@ -57,10 +60,6 @@ architecture spi_master_arch of spi_master is
     signal r_center_val : std_logic_vector(7 downto 0);
     -- placeholder op_code
     signal op_code : std_logic_vector(7 downto 0);
-    -- output wirings
-    signal sclk_w  : std_logic;
-    signal mosi_w  : std_logic;
-    signal csn_w   : std_logic_vector(number_of_slaves-1 downto 0);
     -- base counter for internal clock @ 16.66..MHz
     signal cnt : std_logic_vector(1 downto 0);
     signal clk_internal  : std_logic;
@@ -68,16 +67,20 @@ architecture spi_master_arch of spi_master is
     signal timing_cnt_en : std_logic;
     signal timing_cnt : std_logic_vector(5 downto 0);
     signal term_cnt : integer range 0 to 63 := 42; -- 40 + 2
+    -- output wirings
+    signal sclk_w  : std_logic;
+    signal mosi_w  : std_logic;
+    signal csn_w   : std_logic_vector(number_of_slaves-1 downto 0);
 
-    -- TO REMOVE
     signal sense_w : std_logic_vector(31 downto 0);
+    signal data_ready_w : std_logic;
+
 begin
-    -- TO FIX
-    data_byte_out <= (others => '0');
     --------------------------------------------------------------------------------------
     -- 100MHz clock processes
     --------------------------------------------------------------------------------------
     -- base counter for producing the 16.666...MHz spi slave clock
+    clock_16MHz <= clk_internal;
     p_sclk_counter : process(clock,reset)
     begin
         if reset = '0' then
@@ -127,6 +130,7 @@ begin
     --------------------------------------------------------------------------------------
     busy <= or_reduce(timing_cnt);  -- SPI is busy when sending data.
     -- process for the main timing counter when sending spi commands
+    data_ready <= data_ready_w;
     p_timing_counter : process(clk_internal, reset)
     begin
         if reset = '0' then
@@ -135,9 +139,17 @@ begin
             if timing_cnt_en = '1' then -- enable is handled in the fsm
                 if timing_cnt < term_cnt then
                     timing_cnt <= timing_cnt + 1;
+
+                    data_ready_w <= '0';
                 else
+                    if op_code = x"F8" then
+                        data_ready_w <= '1';
+                    end if;
                     timing_cnt <= (others => '0');
                 end if;
+            else
+                data_ready_w <= '0';
+                timing_cnt <= (others => '0');
             end if;
         end if;
     end process;
@@ -146,10 +158,11 @@ begin
     csn <= not or_reduce(timing_cnt) when slv_addr = "0" else
                     'Z';
 
+
     --------------------------------------------------------------------------------------
     -- fsm
     --------------------------------------------------------------------------------------
-    -- To remove
+
     sense <= sense_w; -- wiring
     mosi <= mosi_w;
     p_fsm : process(clk_internal, reset)
@@ -162,7 +175,7 @@ begin
             r_data_byte_0 <= (others => '0');
             mosi_w <= '0';
 
-            -- to remove
+
             sense_w <= (others => '0');
         elsif rising_edge(clk_internal) then
             case( current_state ) is
@@ -251,7 +264,7 @@ begin
                                     end case;
                                 elsif op_code(7) = '1' then        current_state <= rd_from_slv;
 
-                                    -- to remove
+
                                     sense_w(0) <= miso;
                                 end if;
                             end if;
@@ -260,7 +273,7 @@ begin
                             term_cnt <= 42; -- 40 + 2
                             if timing_cnt >= 9 then       current_state <= rd_from_slv;
 
-                                -- to remove
+
                                 sense_w(0) <= miso;
                             end if;
 
@@ -278,7 +291,7 @@ begin
                                     end case;
                                 elsif op_code(7) = '1' then        current_state <= rd_from_slv;
 
-                                    -- to remove
+
                                     sense_w(0) <= miso;
                                 end if;
                             end if;

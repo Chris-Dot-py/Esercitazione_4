@@ -7,14 +7,15 @@ library std;
 use std.textio.all;
 library work;
 
-entity temp is
+entity clock_div is
     port(
-        clock : in std_logic;
+        clock_in : in std_logic;
         reset : in std_logic
+        clock_out : out std_logic
     );
-end entity temp;
+end entity clock_div;
 
-architecture temp_arch of temp is
+architecture clock_div_arch of clock_div is
     --------------------------------------------------------------------------------------
     -- component declarations
     --------------------------------------------------------------------------------------
@@ -29,10 +30,6 @@ architecture temp_arch of temp is
     signal
 
 begin
-    --------------------------------------------------------------------------------------
-    -- instantiations
-    --------------------------------------------------------------------------------------
-
     --------------------------------------------------------------------------------------
     -- processes
     --------------------------------------------------------------------------------------

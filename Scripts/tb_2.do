@@ -1,5 +1,10 @@
-onerror {resume}
-quietly WaveActivateNextPane {} 0
+vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
+vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
+vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd
+vcom C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd
+vsim -gui work.tb_2
+configure wave -namecolwidth 207
+configure wave -valuecolwidth 100
 add wave -noupdate -expand -group inputs -label {clock ( 100 MHz )} /tb_2/clock
 add wave -noupdate -expand -group inputs -label reset /tb_2/reset
 add wave -noupdate -group spi_bus -label clock_16MHz /tb_2/spi_master_i/clock_16MHz
@@ -60,21 +65,5 @@ add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} 
 add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label cnt_en -radix hexadecimal /tb_2/std_discr_ch_memory_i/cnt_en
 add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label cnt -radix hexadecimal /tb_2/std_discr_ch_memory_i/cnt
 add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label sense_31_vals -radix binary /tb_2/sense_31_vals
-TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {35994409 ps} 0}
-quietly wave cursor active 1
-configure wave -namecolwidth 350
-configure wave -valuecolwidth 100
-configure wave -justifyvalue left
-configure wave -signalnamewidth 0
-configure wave -snapdistance 10
-configure wave -datasetprefix 0
-configure wave -rowmargin 4
-configure wave -childrowmargin 2
-configure wave -gridoffset 0
-configure wave -gridperiod 1
-configure wave -griddelta 40
-configure wave -timeline 0
-configure wave -timelineunits ns
-update
-WaveRestoreZoom {0 ps} {47702875 ps}
+WaveRestoreZoom {0 ps} {25 us}
+run 70 us
