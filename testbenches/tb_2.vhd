@@ -194,7 +194,7 @@ begin
         wait;
     end process;
 
-    rd_op : process
+    p_rd_op : process
     begin
 
         for i in 0 to 4 loop
