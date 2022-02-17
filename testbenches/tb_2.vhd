@@ -175,18 +175,6 @@ begin
       o_bits_stored => o_bits_stored
     );
 
-    -- p_sense_31_vals : process(clock_16MHz, reset)
-    -- begin
-    --     if reset = '0' then
-    --         sense_31_vals <= (others => '0');
-    --     elsif rising_edge(clock_16MHz) then
-    --         sense_31_vals <= rd_data;
-    --         for i in 0 to 14 loop
-    --             sense_31_vals(i+1) <= sense_31_vals(i);
-    --         end loop;
-    --     end if;
-    -- end process;
-
     --------------------------------------------------------------------------------------
     -- processes
     --------------------------------------------------------------------------------------
@@ -198,74 +186,6 @@ begin
         wait for 5 ns;
     end process;
 
-    --------------------------------------------------------------------------------------
-    -- suppongo che prima di mandare l'impulso del comando, ho gia i dati pronti da passare
-    -- al master da serializzare
-    --------------------------------------------------------------------------------------
-    -- process
-    -- begin
-    --
-    -- wait until falling_edge(rd_op);
-    -- for i in 1 to conv_integer(o_bits_stored) + 2 loop
-    --     sense_31_vals(0) <= rd_data;
-    --     for i in 0 to 14 loop
-    --         sense_31_vals(i+1) <= sense_31_vals(i);
-    --     end loop;
-    --     wait until rising_edge(clock_16MHz);
-    -- end loop;
-    -- end process;
-
-    p_signals : process
-    begin
-        -- store data
-        for i in 0 to 5 loop
-            wait for 1 us;
-            wait for 3 us;
-            rd_all_ssb <= '1';
-            wait until rising_edge(busy);
-            rd_all_ssb <= '0';
-        end loop;
-
-        -- rd_op
-        wait until rising_edge(clock_16MHz);
-        rd_op <= '1';
-        wait until rising_edge(clock_16MHz);
-        rd_op <= '0';
-
-        -- store data
-        for i in 0 to 8 loop
-            wait for 1 us;
-            wait for 3 us;
-            rd_all_ssb <= '1';
-            wait until rising_edge(busy);
-            rd_all_ssb <= '0';
-        end loop;
-
-        -- rd_op
-        wait until rising_edge(clock_16MHz);
-        rd_op <= '1';
-        wait until rising_edge(clock_16MHz);
-        rd_op <= '0';
-
-        -- store data
-        for i in 0 to 8 loop
-            wait for 1 us;
-            wait for 3 us;
-            rd_all_ssb <= '1';
-            if i = 6 then
-                wait until rising_edge(data_ready);
-                rd_op <= '1';
-                wait until rising_edge(clock_16MHz);
-                rd_op <= '0';
-            end if;
-            wait until rising_edge(busy);
-            rd_all_ssb <= '0';
-        end loop;
-
-
-        wait;
-    end process;
-
     p_gen_rst : process
     begin
         reset <= '0';
@@ -273,5 +193,76 @@ begin
         reset <= '1';
         wait;
     end process;
+
+    rd_op : process
+    begin
+
+        for i in 0 to 4 loop
+            wait until falling_edge(data_ready);
+            if i = 4 then
+                -- rd_op
+                wait for 400 ns;
+                wait until rising_edge(clock_16MHz);
+                rd_op <= '1';
+                wait until rising_edge(clock_16MHz);
+                rd_op <= '0';
+            end if;
+        end loop;
+
+        for i in 0 to 8 loop
+            if i = 8 then
+                -- rd_op
+                wait for 2700 ns;
+                wait until rising_edge(clock_16MHz);
+                rd_op <= '1';
+                wait until rising_edge(clock_16MHz);
+                rd_op <= '0';
+            end if;
+            wait until falling_edge(data_ready);
+        end loop;
+
+        for i in 0 to 8 loop
+            wait until rising_edge(data_ready);
+            if i = 4 then
+                -- rd_op
+                rd_op <= '1';
+                wait until rising_edge(clock_16MHz);
+                rd_op <= '0';
+                wait until rising_edge(clock_16MHz);
+            end if;
+        end loop;
+
+    end process;
+
+    p_wr_op: process
+    begin
+        -- store data
+        for i in 0 to 5 loop
+            wait for 3 us;
+            rd_all_ssb <= '1';
+            wait until rising_edge(busy);
+            rd_all_ssb <= '0';
+        end loop;
+
+        -- store data
+        for i in 0 to 8 loop
+            wait for 3 us;
+            rd_all_ssb <= '1';
+            wait until rising_edge(busy);
+            rd_all_ssb <= '0';
+        end loop;
+
+        -- store data
+        for i in 0 to 8 loop
+            wait for 3 us;
+            rd_all_ssb <= '1';
+            wait until rising_edge(busy);
+            rd_all_ssb <= '0';
+        end loop;
+
+
+        wait;
+    end process;
+
 
 end architecture;

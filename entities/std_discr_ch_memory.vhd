@@ -55,7 +55,6 @@ begin
         if reset = '0' then
             bit_FIFO <= (others => (others => '0'));
             bits_stored <= (others => (others => '0'));
-            wr_index <= (others => '1');
             FIFO_switch <= '0';
             busy_unloading_FIFO <= '0';
             rd_data_w <= '0';
@@ -74,15 +73,6 @@ begin
                     bit_FIFO(conv_integer(FIFO_switch))(conv_integer(wr_index)) <= wr_data;
                     bits_stored(conv_integer(FIFO_switch)) <= bits_stored(conv_integer(FIFO_switch)) + 1;
                 end if;
-            end if;
-
-            -- gestione wr_index
-            if wr_op = '1' AND rd_op = '1' then
-                wr_index <= x"E";
-            elsif wr_op = '1' and rd_op = '0' then
-                wr_index <= wr_index - 1;
-            elsif cnt_en = '0' and rd_op = '1' then
-                wr_index <= (others => '1');
             end if;
 
             -- when reading: freeze fifo and switch to the other fifo
@@ -107,6 +97,22 @@ begin
                 end if;
             end if;
 
+        end if;
+
+    end process;
+
+    p_gestione_wr_index : process(clock, reset)
+    begin
+        if reset = '0' then
+            wr_index <= (others => '1');
+        elsif rising_edge(clock) then
+            if wr_op = '1' AND rd_op = '1' then
+                wr_index <= x"E";
+            elsif wr_op = '1' and rd_op = '0' then
+                wr_index <= wr_index - 1;
+            elsif cnt_en = '0' and rd_op = '1' then
+                wr_index <= (others => '1');
+            end if;
         end if;
     end process;
 
