@@ -175,7 +175,6 @@ begin
             r_data_byte_0 <= (others => '0');
             mosi_w <= '0';
 
-
             sense_w <= (others => '0');
         elsif rising_edge(clk_internal) then
             case( current_state ) is

@@ -1,13 +1,13 @@
 vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
 vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
 vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd
+vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/clock_div.vhd
 vcom C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd
 vsim -gui work.tb_2
 configure wave -namecolwidth 207
 configure wave -valuecolwidth 100
 add wave -noupdate -expand -group inputs -label {clock ( 100 MHz )} /tb_2/clock
 add wave -noupdate -expand -group inputs -label reset /tb_2/reset
-add wave -noupdate -group spi_bus -label clock_16MHz /tb_2/spi_master_i/clock_16MHz
 add wave -noupdate -group spi_bus -label spi_cmd /tb_2/spi_master_i/spi_cmd
 add wave -noupdate -group spi_bus -label rd_regs /tb_2/spi_master_i/rd_regs
 add wave -noupdate -group spi_bus -label data_byte_in -radix hexadecimal /tb_2/spi_master_i/data_byte_in
@@ -49,7 +49,7 @@ add wave -noupdate -group {holt sensor} -group {holt regs} -label SSB1 -radix he
 add wave -noupdate -group {holt sensor} -group {holt regs} -label SSB2 -radix hexadecimal /tb_2/HI_8345_i/r_SSB_2
 add wave -noupdate -group {holt sensor} -group {holt regs} -label SSB3 -radix hexadecimal /tb_2/HI_8345_i/r_SSB_3
 add wave -noupdate -group {holt sensor} -label {current state} /tb_2/HI_8345_i/current_state
-add wave -noupdate -expand -group std_discr_ch_memory -label {rd_op} /tb_2/std_discr_ch_memory_i/rd_op
+add wave -noupdate -expand -group std_discr_ch_memory -label rd_op /tb_2/std_discr_ch_memory_i/rd_op
 add wave -noupdate -expand -group std_discr_ch_memory -label wr_op /tb_2/std_discr_ch_memory_i/wr_op
 add wave -noupdate -expand -group std_discr_ch_memory -label wr_data /tb_2/std_discr_ch_memory_i/wr_data
 add wave -noupdate -expand -group std_discr_ch_memory -label rd_data /tb_2/std_discr_ch_memory_i/rd_data
