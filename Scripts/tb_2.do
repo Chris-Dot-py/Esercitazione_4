@@ -1,10 +1,10 @@
 vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
 vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
-vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd
+vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch.vhd
 vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/clock_div.vhd
 vcom C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd
 vsim -gui work.tb_2
-configure wave -namecolwidth 207
+configure wave -namecolwidth 294
 configure wave -valuecolwidth 100
 add wave -noupdate -expand -group inputs -label {clock ( 100 MHz )} /tb_2/clock
 add wave -noupdate -expand -group inputs -label reset /tb_2/reset
@@ -49,21 +49,22 @@ add wave -noupdate -group {holt sensor} -group {holt regs} -label SSB1 -radix he
 add wave -noupdate -group {holt sensor} -group {holt regs} -label SSB2 -radix hexadecimal /tb_2/HI_8345_i/r_SSB_2
 add wave -noupdate -group {holt sensor} -group {holt regs} -label SSB3 -radix hexadecimal /tb_2/HI_8345_i/r_SSB_3
 add wave -noupdate -group {holt sensor} -label {current state} /tb_2/HI_8345_i/current_state
-add wave -noupdate -expand -group std_discr_ch_memory -label rd_op /tb_2/std_discr_ch_memory_i/rd_op
-add wave -noupdate -expand -group std_discr_ch_memory -label wr_op /tb_2/std_discr_ch_memory_i/wr_op
-add wave -noupdate -expand -group std_discr_ch_memory -label wr_data /tb_2/std_discr_ch_memory_i/wr_data
-add wave -noupdate -expand -group std_discr_ch_memory -label rd_data /tb_2/std_discr_ch_memory_i/rd_data
-add wave -noupdate -expand -group std_discr_ch_memory -label o_bits_stored -radix hexadecimal /tb_2/std_discr_ch_memory_i/o_bits_stored
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label bit_FIFO(1) -radix hexadecimal /tb_2/std_discr_ch_memory_i/bit_FIFO(1)
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label bit_FIFO(0) -radix hexadecimal /tb_2/std_discr_ch_memory_i/bit_FIFO(0)
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label bit_stored(1) -radix hexadecimal /tb_2/std_discr_ch_memory_i/bits_stored(1)
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label bit_stored(0) -radix hexadecimal /tb_2/std_discr_ch_memory_i/bits_stored(0)
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label rd_op -radix hexadecimal /tb_2/std_discr_ch_memory_i/rd_op
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label wr_index -radix hexadecimal /tb_2/std_discr_ch_memory_i/wr_index
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label FIFO_switch -radix hexadecimal /tb_2/std_discr_ch_memory_i/FIFO_switch
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label busy_unloading_FIFO -radix hexadecimal /tb_2/std_discr_ch_memory_i/busy_unloading_FIFO
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label cnt_en -radix hexadecimal /tb_2/std_discr_ch_memory_i/cnt_en
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label cnt -radix hexadecimal /tb_2/std_discr_ch_memory_i/cnt
-add wave -noupdate -expand -group std_discr_ch_memory -expand -group {mem ints} -label sense_31_vals -radix binary /tb_2/sense_31_vals
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/set_config
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/ch_unavailable_w
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/std_discr_dir
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/r_config
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/wr_data
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/load_pulse
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/unloading_done
+add wave -noupdate -expand -group std_discr_ch -color Orange -radix hexadecimal -radixshowbase 0 /tb_2/std_discr_ch_i/rd_data
+add wave -noupdate -expand -group std_discr_ch -color Orange -radix unsigned -radixshowbase 0 /tb_2/std_discr_ch_i/o_bits_stored
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/send_data_block
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/wr_bit
+add wave -noupdate -expand -group std_discr_ch /tb_2/std_discr_ch_i/FIFO_switch
+add wave -noupdate -expand -group std_discr_ch -radix hexadecimal -radixshowbase 0 /tb_2/std_discr_ch_i/bit_FIFO(0)
+add wave -noupdate -expand -group std_discr_ch -radix unsigned -radixshowbase 0 /tb_2/std_discr_ch_i/bits_stored(0)
+add wave -noupdate -expand -group std_discr_ch -color {Cornflower Blue} -radix unsigned -radixshowbase 0 /tb_2/std_discr_ch_i/wr_index
+add wave -noupdate -expand -group std_discr_ch -radix hexadecimal -radixshowbase 0 /tb_2/std_discr_ch_i/bit_FIFO(1)
+add wave -noupdate -expand -group std_discr_ch -radix unsigned -radixshowbase 0 /tb_2/std_discr_ch_i/bits_stored(1)
 WaveRestoreZoom {0 ps} {25 us}
 run 80 us

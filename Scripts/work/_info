@@ -16,7 +16,7 @@ Z2 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
 Z3 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
 Z4 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
 Z5 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
-!i122 1581
+!i122 1964
 Z6 dC:/Users/christian.manuel/github/Esercitazione_4/Scripts
 Z7 8C:/Users/christian.manuel/github/Esercitazione_4/entities/clock_div.vhd
 Z8 FC:/Users/christian.manuel/github/Esercitazione_4/entities/clock_div.vhd
@@ -26,9 +26,9 @@ V7moZ@EhGhAY;S]^L:]J<=3
 !s100 :K:FaMSnVIdNYAoDA^R6z2
 Z10 OV;C;2020.1;71
 32
-Z11 !s110 1645098999
+Z11 !s110 1645184101
 !i10b 1
-Z12 !s108 1645098999.000000
+Z12 !s108 1645184101.000000
 Z13 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/clock_div.vhd|
 Z14 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/clock_div.vhd|
 !i113 1
@@ -40,7 +40,7 @@ R3
 R4
 R5
 DEx4 work 9 clock_div 0 22 7moZ@EhGhAY;S]^L:]J<=3
-!i122 1581
+!i122 1964
 l26
 L18 29
 VUZcO>daE5j5coGjMghLE@0
@@ -61,7 +61,7 @@ R2
 R3
 R4
 R5
-!i122 1578
+!i122 1961
 R6
 Z17 8C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
 Z18 FC:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd
@@ -71,9 +71,9 @@ VJbb29hL6n=QQX8R1YhioH0
 !s100 C`@Z9h4kkFZ@dLg]>PCDR2
 R10
 32
-Z19 !s110 1645098998
+Z19 !s110 1645184100
 !i10b 1
-Z20 !s108 1645098998.000000
+Z20 !s108 1645184099.000000
 Z21 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd|
 Z22 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/HI_8345.vhd|
 !i113 1
@@ -85,7 +85,7 @@ R3
 R4
 R5
 DEx4 work 7 hi_8345 0 22 Jbb29hL6n=QQX8R1YhioH0
-!i122 1578
+!i122 1961
 l56
 L23 212
 V52hj^P7gkn6g[oVb0<KFL3
@@ -99,77 +99,217 @@ R21
 R22
 !i113 1
 R15
-Espi_master
-Z23 w1645098810
-Z24 DPx8 synopsys 10 attributes 0 22 dc>JdEHRM@6GGENe5bZ?D1
-Z25 DPx4 ieee 14 std_logic_misc 0 22 dN]HY6l5ohPcZ:TaC@B;53
+Epacket_manager
+Z23 w1645175325
+Z24 DPx4 work 11 pkg_signals 0 22 SCXMd4mol3l1_[mLHRkMA2
 R1
 R2
 R3
 R4
 R5
-!i122 1579
+!i122 1709
 R6
-Z26 8C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
-Z27 FC:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
+Z25 8C:/Users/christian.manuel/github/Esercitazione_4/entities/packet_manager.vhd
+Z26 FC:/Users/christian.manuel/github/Esercitazione_4/entities/packet_manager.vhd
+l0
+Z27 L11 1
+VWbB4;3?IbF=<ZeNaB20=H0
+!s100 ;c9DnCKcS7d>cBVMV4cRh1
+R10
+32
+!s110 1645175341
+!i10b 1
+!s108 1645175341.000000
+Z28 !s90 -reportprogress|300|-work|work|C:/Users/christian.manuel/github/Esercitazione_4/entities/packet_manager.vhd|
+Z29 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/packet_manager.vhd|
+!i113 1
+Z30 o-work work
+R15
+Apacket_manager_arch
+R1
+R2
+R3
+R4
+R5
+DEx4 work 14 packet_manager 0 22 W9lfk=;8djR_HASK:NWVV0
+!i122 1649
+l58
+L23 55
+V^Og;MRT4QX_CJ=z?CQ1[a1
+!s100 QECQZ9[bH[WkM3JEMPB6f1
+R10
+32
+!s110 1645105617
+!i10b 1
+!s108 1645105616.000000
+R28
+R29
+!i113 1
+R30
+R15
+Ppkg_signals
+R1
+R2
+R3
+R4
+R5
+!i122 1708
+Z31 w1645175318
+R6
+Z32 8C:/Users/christian.manuel/github/Esercitazione_4/packages/pkg_signals.vhd
+Z33 FC:/Users/christian.manuel/github/Esercitazione_4/packages/pkg_signals.vhd
+l0
+L9 1
+VSCXMd4mol3l1_[mLHRkMA2
+!s100 f7UL1ch3dcXDi0@VoDD[52
+R10
+32
+Z34 !s110 1645175337
+!i10b 1
+Z35 !s108 1645175337.000000
+Z36 !s90 -reportprogress|300|-work|work|C:/Users/christian.manuel/github/Esercitazione_4/packages/pkg_signals.vhd|
+Z37 !s107 C:/Users/christian.manuel/github/Esercitazione_4/packages/pkg_signals.vhd|
+!i113 1
+R30
+R15
+Bbody
+R24
+R1
+R2
+R3
+R4
+R5
+!i122 1708
+l0
+L15 1
+VM2z;1W`n8f<l3OcSIZ1?J3
+!s100 M[:kGTZjAd;XZZ9@_UL`z3
+R10
+32
+R34
+!i10b 1
+R35
+R36
+R37
+!i113 1
+R30
+R15
+Espi_master
+Z38 w1645098810
+Z39 DPx8 synopsys 10 attributes 0 22 dc>JdEHRM@6GGENe5bZ?D1
+Z40 DPx4 ieee 14 std_logic_misc 0 22 dN]HY6l5ohPcZ:TaC@B;53
+R1
+R2
+R3
+R4
+R5
+!i122 1962
+R6
+Z41 8C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
+Z42 FC:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
 l0
 L17 1
 V@dmgNjdkBezeZAaCnc8@I3
 !s100 <no^[TIg=X=2iA<fQdMR52
 R10
 32
-R11
+R19
 !i10b 1
-R20
-Z28 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
-Z29 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
+Z43 !s108 1645184100.000000
+Z44 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
+Z45 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd|
 !i113 1
 R15
 Aspi_master_arch
-R24
-R25
+R39
+R40
 R1
 R2
 R3
 R4
 R5
 DEx4 work 10 spi_master 0 22 @dmgNjdkBezeZAaCnc8@I3
-!i122 1579
+!i122 1962
 l78
 L40 304
 V7fKVF7`z^okYo]U1f>H]b1
 !s100 C`oUUF3W98>31MMB;SAoi2
 R10
 32
-R11
+R19
 !i10b 1
-R20
-R28
-R29
+R43
+R44
+R45
 !i113 1
 R15
-Estd_discr_ch_memory
-Z30 w1645098805
+Estd_discr_ch
+Z46 w1645184010
 R1
 R2
 R3
 R4
 R5
-!i122 1580
+!i122 1963
 R6
-Z31 8C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd
-Z32 FC:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd
+Z47 8C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch.vhd
+Z48 FC:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch.vhd
+l0
+R9
+V=ePQ;V>5>z4:aLnk3HPJN2
+!s100 [8?N?8jL<n8_n@zBQ2Tz_1
+R10
+32
+R11
+!i10b 1
+R43
+Z49 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch.vhd|
+Z50 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch.vhd|
+!i113 1
+R15
+Astd_discr_ch_arch
+R1
+R2
+R3
+R4
+R5
+DEx4 work 12 std_discr_ch 0 22 =ePQ;V>5>z4:aLnk3HPJN2
+!i122 1963
+l80
+L44 163
+VE`D0MJ9Hd0o=;d;R[i5k70
+!s100 63;`EFdaaOkJXSW_ZSY@32
+R10
+32
+R11
+!i10b 1
+R43
+R49
+R50
+!i113 1
+R15
+Estd_discr_ch_memory
+Z51 w1645179352
+R1
+R2
+R3
+R4
+R5
+!i122 1779
+R6
+R47
+R48
 l0
 R9
 V7Q>1nD6K0P:SS]KG[a7c=1
 !s100 mh=U6^jz;4XdT6XDDWd1K0
 R10
 32
-R11
+Z52 !s110 1645179788
 !i10b 1
-R12
-Z33 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd|
-Z34 !s107 C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch_memory.vhd|
+Z53 !s108 1645179788.000000
+R49
+R50
 !i113 1
 R15
 Astd_discr_ch_memory_arch
@@ -179,22 +319,22 @@ R3
 R4
 R5
 DEx4 work 19 std_discr_ch_memory 0 22 7Q>1nD6K0P:SS]KG[a7c=1
-!i122 1580
+!i122 1779
 l47
 L28 92
 Vn;L:EGI`jd25RXY]RldOO2
 !s100 FW[Hz3DFCeg8Hh1[kTT5e2
 R10
 32
-R11
+R52
 !i10b 1
-R12
-R33
-R34
+R53
+R49
+R50
 !i113 1
 R15
 Etb_1
-Z35 w1645016362
+Z54 w1645016362
 R1
 R2
 R3
@@ -202,19 +342,19 @@ R4
 R5
 !i122 1026
 R6
-Z36 8C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd
-Z37 FC:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd
+Z55 8C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd
+Z56 FC:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd
 l0
-Z38 L11 1
+R27
 V^bkClI[:[7jd>nL8D_n0=0
 !s100 fEGH;QZN@2:RmAhEDSn092
 R10
 32
-Z39 !s110 1645017709
+Z57 !s110 1645017709
 !i10b 1
-Z40 !s108 1645017709.000000
-Z41 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd|
-Z42 !s107 C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd|
+Z58 !s108 1645017709.000000
+Z59 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd|
+Z60 !s107 C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_1.vhd|
 !i113 1
 R15
 Atb_1_arch
@@ -231,35 +371,35 @@ VXOGW]SaB5]EU2ckzg:fWF0
 !s100 5TzkCKg61b=42hcG[nCWO2
 R10
 32
-R39
+R57
 !i10b 1
-R40
-R41
-R42
+R58
+R59
+R60
 !i113 1
 R15
 Etb_2
-Z43 w1645098808
+Z61 w1645183845
 R1
 R2
 R3
 R4
 R5
-!i122 1582
+!i122 1965
 R6
-Z44 8C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd
-Z45 FC:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd
+Z62 8C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd
+Z63 FC:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd
 l0
-R38
+R27
 VdMijAJdcaF9dgFAbOVdMP2
 !s100 Xo_`>NQGHjDj<]iHmc9zN0
 R10
 32
-Z46 !s110 1645099000
+Z64 !s110 1645184102
 !i10b 1
 R12
-Z47 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd|
-Z48 !s107 C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd|
+Z65 !s90 -reportprogress|300|C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd|
+Z66 !s107 C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_2.vhd|
 !i113 1
 R15
 Atb_2_arch
@@ -268,18 +408,18 @@ R2
 R3
 R4
 R5
-Z49 DEx4 work 4 tb_2 0 22 dMijAJdcaF9dgFAbOVdMP2
-!i122 1582
-l117
-Z50 L14 255
-Z51 VUHFOdFOEb5d9>Uo:YO]aS0
-Z52 !s100 10U?_ieUb@Ac7B:Tbz5HY1
+Z67 DEx4 work 4 tb_2 0 22 dMijAJdcaF9dgFAbOVdMP2
+!i122 1965
+l145
+Z68 L14 304
+Z69 V4m9<8`9IFKDcHbI>bkL8<2
+Z70 !s100 :2aEa[:JV[JlEIZKlW?A30
 R10
 32
-R46
+R64
 !i10b 1
 R12
-R47
-R48
+R65
+R66
 !i113 1
 R15
