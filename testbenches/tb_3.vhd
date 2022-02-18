@@ -7,11 +7,12 @@ library std;
 use std.textio.all;
 
 library work;
+use work.pkg_signals.all;
 
-entity tb_2 is
-end entity tb_2;
+entity tb_3 is
+end entity tb_3;
 
-architecture tb_2_arch of tb_2 is
+architecture tb_3_arch of tb_3 is
     --------------------------------------------------------------------------------------
     -- component declarations
     --------------------------------------------------------------------------------------
@@ -49,28 +50,55 @@ architecture tb_2_arch of tb_2 is
     component std_discr_ch
     generic (
       ch_label : std_logic_vector;
-      FIFO_len : integer := 16
+      FIFO_len : integer := 10
     );
+    port (
+      clock              : in  std_logic;
+      reset              : in  std_logic;
+      rd_op              : in  std_logic;
+      wr_op              : in  std_logic;
+      wr_data            : in  std_logic;
+      load_pulse         : out std_logic;
+      rd_data            : out std_logic_vector(FIFO_len-1 downto 0);
+      o_bits_stored      : out std_logic_vector(3 downto 0);
+      std_discr_diag     : in  std_logic;
+      std_discr_o        : out std_logic;
+      set_config         : in  std_logic;
+      std_discr_dir      : in  std_logic;
+      std_discr_disable  : in  std_logic;
+      std_discr_sbit_en  : in  std_logic;
+      std_discr_ibit_en  : in  std_logic;
+      std_discr_sbit_alm : out std_logic;
+      std_discr_ibit_alm : out std_logic;
+      ch_unavailable     : out std_logic;
+      unloading_done     : out std_logic;
+      std_discr_label    : out std_logic_vector(15 downto 0)
+    );
+    end component std_discr_ch;
+
+    component packet_manager
     port (
       clock           : in  std_logic;
       reset           : in  std_logic;
-      rd_op           : in  std_logic;
-      wr_op           : in  std_logic;
-      wr_data         : in  std_logic;
-      rd_data         : out std_logic;
-      o_bits_stored   : out std_logic_vector(3 downto 0);
-      std_discr_label : out std_logic_vector(15 downto 0);
-      ch_unavailable : out std_logic;
-      unloading_done : out std_logic
+      send_snf_data   : in  std_logic;
+      packet_out      : out std_logic;
+      send_data_block : out std_logic_vector(31 downto 0);
+      unloading_done  : in  std_logic_vector(31 downto 0);
+      ch_unavailable  : in  std_logic_vector(31 downto 0);
+      load_pulse      : in  std_logic_vector(31 downto 0);
+      block_data      : in  t_block_data;
+      block_data_dim  : in  t_block_data_dim
     );
-    end component std_discr_ch;
+    end component packet_manager;
+
+
 
 
     --------------------------------------------------------------------------------------
     -- constants
     --------------------------------------------------------------------------------------
     constant number_of_slaves : integer range 0 to 3 := 1;
-    constant FIFO_len : integer range 0 to 16 := 16;
+    constant FIFO_len : integer range 0 to 10 := 10;
 
     --------------------------------------------------------------------------------------
     -- signals
@@ -111,17 +139,38 @@ architecture tb_2_arch of tb_2 is
     signal rd_r_SSB2    : std_logic := '0';
     signal rd_r_SSB3    : std_logic := '0';
 
-    -- mem
-    signal rd_op : std_logic := '0';    -- signal for creating block data to backbone master
-    signal wr_op        : std_logic;    -- data_ready
-    signal wr_data      : std_logic;    -- sense(n)
-    signal rd_data      : std_logic;    -- => shift_reg(0)
-    signal sense_31_vals : std_logic_vector(15 downto 0) := (others => '0');
-    signal o_bits_stored : std_logic_vector(3 downto 0);
-    signal std_discr_label : std_logic_vector(15 downto 0);
+    -- memss
+    signal rd_op              : std_logic := '0';
+    signal wr_op              : std_logic;
+    signal wr_data            : std_logic;
+    signal load_pulse         : std_logic;
+    signal rd_data            : std_logic_vector(FIFO_len-1 downto 0);
+    signal o_bits_stored      : std_logic_vector(3 downto 0);
+    signal std_discr_diag     : std_logic;
+    signal std_discr_o        : std_logic;
+    signal set_config         : std_logic;
+    signal std_discr_dir      : std_logic;
+    signal std_discr_disable  : std_logic;
+    signal std_discr_sbit_en  : std_logic;
+    signal std_discr_ibit_en  : std_logic;
+    signal std_discr_sbit_alm : std_logic;
+    signal std_discr_ibit_alm : std_logic;
+    signal ch_unavailable     : std_logic;
+    signal unloading_done     : std_logic;
+    type t_label is array (0 to 31) of std_logic_vector(15 downto 0);
+    signal std_discr_label    : t_label;
 
-    signal ch_unavailable : std_logic;
-    signal unloading_done : std_logic;
+    -- packet_manager
+    signal send_snf_data   : std_logic := '0';
+    signal packet_out      : std_logic;
+    signal send_data_block : std_logic_vector(31 downto 0) := (others => '0');
+    signal i_unloading_done  : std_logic_vector(31 downto 0) := (others => '0');
+    signal i_ch_unavailable  : std_logic_vector(31 downto 0) := (others => '0');
+    signal i_load_pulse      : std_logic_vector(31 downto 0) := (others => '0');
+    signal block_data      : t_block_data;
+    signal block_data_dim  : t_block_data_dim;
+
+
 
 begin
     --------------------------------------------------------------------------------------
@@ -170,22 +219,164 @@ begin
       csn  => csn
     );
 
-    std_discr_ch_i : std_discr_ch
+    packet_manager_i : packet_manager
+    port map (
+      clock           => clock,
+      reset           => reset,
+      send_snf_data   => send_snf_data,
+      packet_out      => packet_out,
+      send_data_block => send_data_block,
+
+      unloading_done  => i_unloading_done,
+      ch_unavailable(31)  => i_ch_unavailable(31),
+      ch_unavailable(30)  => i_ch_unavailable(30),
+      ch_unavailable(29)  => i_ch_unavailable(29),
+      ch_unavailable(28)  => i_ch_unavailable(28),
+      ch_unavailable(27)  => i_ch_unavailable(27),
+      ch_unavailable(26 downto 0) =>  (others => '1'),
+      load_pulse      => i_load_pulse,
+      block_data      => block_data,
+      block_data_dim  => block_data_dim
+    );
+
+    ch_32_i : std_discr_ch
     generic map (
-      ch_label => x"FFFF",
+      ch_label => x"001F",
       FIFO_len => FIFO_len
     )
     port map (
-      clock           => clock_16MHz,
-      reset           => reset,
-      rd_op           => rd_op,
-      wr_op           => data_ready,
-      wr_data         => sense(31),
-      rd_data         => rd_data,
-      o_bits_stored   => o_bits_stored,
-      std_discr_label => std_discr_label,
-      ch_unavailable => ch_unavailable,
-      unloading_done => unloading_done
+      clock              => clock_16MHz,
+      reset              => reset,
+      rd_op              => send_data_block(31), -- send ch_data_block
+      wr_op              => data_ready,
+      wr_data            => sense(31),
+      load_pulse         => i_load_pulse(31),
+      rd_data            => block_data(31),
+      o_bits_stored      => block_data_dim(31),
+      std_discr_diag     => '0', --
+      std_discr_o        => std_discr_o,--
+      set_config         => set_config,--
+      std_discr_disable  => '0', --
+      std_discr_dir      => '0',--
+      std_discr_sbit_en  => '0', --
+      std_discr_ibit_en  => '0', --
+      std_discr_sbit_alm => std_discr_sbit_alm, --
+      std_discr_ibit_alm => std_discr_ibit_alm, --
+      ch_unavailable     => i_ch_unavailable(31), --
+      unloading_done     => i_unloading_done(31),--
+      std_discr_label    => std_discr_label(31) --
+    );
+
+    ch_31_i : std_discr_ch
+    generic map (
+      ch_label => x"001E",
+      FIFO_len => FIFO_len
+    )
+    port map (
+      clock              => clock_16MHz,
+      reset              => reset,
+      rd_op              => send_data_block(30), -- send ch_data_block
+      wr_op              => data_ready,
+      wr_data            => sense(31),
+      load_pulse         => i_load_pulse(30),
+      rd_data            => block_data(30),
+      o_bits_stored      => block_data_dim(30),
+      std_discr_diag     => '0', --
+      std_discr_o        => std_discr_o,--
+      set_config         => set_config,--
+      std_discr_disable  => '0', --
+      std_discr_dir      => '0',--
+      std_discr_sbit_en  => '0', --
+      std_discr_ibit_en  => '0', --
+      std_discr_sbit_alm => std_discr_sbit_alm, --
+      std_discr_ibit_alm => std_discr_ibit_alm, --
+      ch_unavailable     => i_ch_unavailable(30), --
+      unloading_done     => i_unloading_done(30),--
+      std_discr_label    => std_discr_label(30) --
+    );
+
+    ch_30_i : std_discr_ch
+    generic map (
+      ch_label => x"001D",
+      FIFO_len => FIFO_len
+    )
+    port map (
+      clock              => clock_16MHz,
+      reset              => reset,
+      rd_op              => send_data_block(29), -- send ch_data_block
+      wr_op              => data_ready,
+      wr_data            => sense(31),
+      load_pulse         => i_load_pulse(29),
+      rd_data            => block_data(29),
+      o_bits_stored      => block_data_dim(29),
+      std_discr_diag     => '0', --
+      std_discr_o        => std_discr_o,--
+      set_config         => set_config,--
+      std_discr_disable  => '0', --
+      std_discr_dir      => '0',--
+      std_discr_sbit_en  => '0', --
+      std_discr_ibit_en  => '0', --
+      std_discr_sbit_alm => std_discr_sbit_alm, --
+      std_discr_ibit_alm => std_discr_ibit_alm, --
+      ch_unavailable     => i_ch_unavailable(29), --
+      unloading_done     => i_unloading_done(29),--
+      std_discr_label    => std_discr_label(29) --
+    );
+
+    ch_29_i : std_discr_ch
+    generic map (
+      ch_label => x"001C",
+      FIFO_len => FIFO_len
+    )
+    port map (
+      clock              => clock_16MHz,
+      reset              => reset,
+      rd_op              => send_data_block(28), -- send ch_data_block
+      wr_op              => data_ready,
+      wr_data            => sense(31),
+      load_pulse         => i_load_pulse(28),
+      rd_data            => block_data(28),
+      o_bits_stored      => block_data_dim(28),
+      std_discr_diag     => '0', --
+      std_discr_o        => std_discr_o,--
+      set_config         => set_config,--
+      std_discr_disable  => '1', --
+      std_discr_dir      => '0',--
+      std_discr_sbit_en  => '0', --
+      std_discr_ibit_en  => '0', --
+      std_discr_sbit_alm => std_discr_sbit_alm, --
+      std_discr_ibit_alm => std_discr_ibit_alm, --
+      ch_unavailable     => i_ch_unavailable(28), --
+      unloading_done     => i_unloading_done(28),--
+      std_discr_label    => std_discr_label(28) --
+    );
+
+    ch_28_i : std_discr_ch
+    generic map (
+      ch_label => x"001B",
+      FIFO_len => FIFO_len
+    )
+    port map (
+      clock              => clock_16MHz,
+      reset              => reset,
+      rd_op              => send_data_block(27), -- send ch_data_block
+      wr_op              => data_ready,
+      wr_data            => sense(31),
+      load_pulse         => i_load_pulse(27),
+      rd_data            => block_data(27),
+      o_bits_stored      => block_data_dim(27),
+      std_discr_diag     => '0', --
+      std_discr_o        => std_discr_o,--
+      set_config         => set_config,--
+      std_discr_disable  => '0', --
+      std_discr_dir      => '0',--
+      std_discr_sbit_en  => '0', --
+      std_discr_ibit_en  => '0', --
+      std_discr_sbit_alm => std_discr_sbit_alm, --
+      std_discr_ibit_alm => std_discr_ibit_alm, --
+      ch_unavailable     => i_ch_unavailable(27), --
+      unloading_done     => i_unloading_done(27),--
+      std_discr_label    => std_discr_label(27) --
     );
 
     --------------------------------------------------------------------------------------
@@ -202,23 +393,28 @@ begin
     p_gen_rst : process
     begin
         reset <= '0';
-        wait for 2 ns;
+        set_config <= '0';
+        wait for 1 ns;
         reset <= '1';
+        set_config <= '1';
+        wait for 200 ns;
+        set_config <= '0';
+
         wait;
     end process;
 
     p_rd_op : process
     begin
-
+        wait for 500 ns;
         for i in 0 to 4 loop
             wait until falling_edge(data_ready);
             if i = 4 then
                 -- rd_op
                 wait for 400 ns;
                 wait until rising_edge(clock_16MHz);
-                rd_op <= '1';
+                send_snf_data <= '1';
                 wait until rising_edge(clock_16MHz);
-                rd_op <= '0';
+                send_snf_data <= '0';
             end if;
         end loop;
 
@@ -227,9 +423,9 @@ begin
                 -- rd_op
                 wait for 2700 ns;
                 wait until rising_edge(clock_16MHz);
-                rd_op <= '1';
+                send_snf_data <= '1';
                 wait until rising_edge(clock_16MHz);
-                rd_op <= '0';
+                send_snf_data <= '0';
             end if;
             wait until falling_edge(data_ready);
         end loop;
@@ -238,9 +434,9 @@ begin
             wait until rising_edge(data_ready);
             if i = 4 then
                 -- rd_op
-                rd_op <= '1';
+                send_snf_data <= '1';
                 wait until rising_edge(clock_16MHz);
-                rd_op <= '0';
+                send_snf_data <= '0';
                 wait until rising_edge(clock_16MHz);
             end if;
         end loop;
@@ -249,6 +445,7 @@ begin
 
     p_wr_op: process
     begin
+        wait for 500 ns;
         -- store data
         for i in 0 to 5 loop
             wait for 3 us;

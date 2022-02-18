@@ -56,8 +56,8 @@ architecture spi_master_arch of spi_master is
     -- registro placeholder per calcolo cenhys
     signal r_data_byte_1 : std_logic_vector(7 downto 0);
     signal r_data_byte_0 : std_logic_vector(7 downto 0);
-    signal r_hyst_val : std_logic_vector(7 downto 0);
-    signal r_center_val : std_logic_vector(7 downto 0);
+    signal r_hyst_val : std_logic_vector(7 downto 0) := (others => '0');
+    signal r_center_val : std_logic_vector(7 downto 0) := (others => '0');
     -- placeholder op_code
     signal op_code : std_logic_vector(7 downto 0);
     -- base counter for internal clock @ 16.66..MHz

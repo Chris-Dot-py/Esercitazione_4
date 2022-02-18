@@ -77,8 +77,11 @@ architecture std_discr_ch_arch of std_discr_ch is
     -- load_pulse
     signal load_pulse_w : std_logic;
 
+    --LABEL
+    signal std_discr_label_w : std_logic_vector(15 downto 0) := ch_label;
+
 begin
-    std_discr_label <= ch_label;
+    std_discr_label <= std_discr_label_w;
     --------------------------------------------------------------------------------------
     -- processes
     --------------------------------------------------------------------------------------
@@ -150,8 +153,6 @@ begin
             rd_data_w <= (others => '0');
             o_bits_stored_w <= (others => '0');
 
-            cnt_en <= '0';
-            cnt <= (others => '0');
         elsif rising_edge(clock) then
 
             -- write buffer operation
@@ -194,8 +195,12 @@ begin
                 if wr_bit = '1' AND send_data_block = '1' then
                     wr_index <= "1001";
                 elsif wr_bit = '1' and send_data_block = '0' then
-                    wr_index <= wr_index - 1;
-                elsif cnt_en = '0' and send_data_block = '1' then
+                    if wr_index = 0 then
+                        wr_index <= "1001";
+                    else
+                        wr_index <= wr_index - 1;
+                    end if;
+                elsif wr_bit = '0' and send_data_block = '1' then
                     wr_index <= "1001";
                 end if;
             end if;
