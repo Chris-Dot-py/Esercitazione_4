@@ -10,6 +10,7 @@ package pkg_signals is
 
     type t_block_data is array (0 to 31) of std_logic_vector(9 downto 0);
     type t_block_data_dim is array (0 to 31) of std_logic_vector(3 downto 0);
+    type t_ch_label is array (0 to 31) of std_logic_vector(15 downto 0);
 
 end package pkg_signals;
 

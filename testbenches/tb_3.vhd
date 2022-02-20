@@ -86,6 +86,7 @@ architecture tb_3_arch of tb_3 is
       unloading_done  : in  std_logic_vector(31 downto 0);
       ch_unavailable  : in  std_logic_vector(31 downto 0);
       load_pulse      : in  std_logic_vector(31 downto 0);
+      ch_label        : in t_ch_label;
       block_data      : in  t_block_data;
       block_data_dim  : in  t_block_data_dim
     );
@@ -157,8 +158,6 @@ architecture tb_3_arch of tb_3 is
     signal std_discr_ibit_alm : std_logic;
     signal ch_unavailable     : std_logic;
     signal unloading_done     : std_logic;
-    type t_label is array (0 to 31) of std_logic_vector(15 downto 0);
-    signal std_discr_label    : t_label;
 
     -- packet_manager
     signal send_snf_data   : std_logic := '0';
@@ -169,7 +168,7 @@ architecture tb_3_arch of tb_3 is
     signal i_load_pulse      : std_logic_vector(31 downto 0) := (others => '0');
     signal block_data      : t_block_data;
     signal block_data_dim  : t_block_data_dim;
-
+    signal ch_label        : t_ch_label;
 
 
 begin
@@ -236,12 +235,13 @@ begin
       ch_unavailable(26 downto 0) =>  (others => '1'),
       load_pulse      => i_load_pulse,
       block_data      => block_data,
-      block_data_dim  => block_data_dim
+      block_data_dim  => block_data_dim,
+        ch_label      => ch_label
     );
 
     ch_32_i : std_discr_ch
     generic map (
-      ch_label => x"001F",
+      ch_label => x"AAAF",
       FIFO_len => FIFO_len
     )
     port map (
@@ -264,12 +264,12 @@ begin
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(31), --
       unloading_done     => i_unloading_done(31),--
-      std_discr_label    => std_discr_label(31) --
+      std_discr_label    => ch_label(31) --
     );
 
     ch_31_i : std_discr_ch
     generic map (
-      ch_label => x"001E",
+      ch_label => x"AAAE",
       FIFO_len => FIFO_len
     )
     port map (
@@ -284,7 +284,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => '0', --
+      std_discr_disable  => '1', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -292,12 +292,12 @@ begin
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(30), --
       unloading_done     => i_unloading_done(30),--
-      std_discr_label    => std_discr_label(30) --
+      std_discr_label    => ch_label(30) --
     );
 
     ch_30_i : std_discr_ch
     generic map (
-      ch_label => x"001D",
+      ch_label => x"AAAD",
       FIFO_len => FIFO_len
     )
     port map (
@@ -312,7 +312,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => '0', --
+      std_discr_disable  => '1', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -320,12 +320,12 @@ begin
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(29), --
       unloading_done     => i_unloading_done(29),--
-      std_discr_label    => std_discr_label(29) --
+      std_discr_label    => ch_label(29) --
     );
 
     ch_29_i : std_discr_ch
     generic map (
-      ch_label => x"001C",
+      ch_label => x"AAAC",
       FIFO_len => FIFO_len
     )
     port map (
@@ -348,12 +348,12 @@ begin
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(28), --
       unloading_done     => i_unloading_done(28),--
-      std_discr_label    => std_discr_label(28) --
+      std_discr_label    => ch_label(28) --
     );
 
     ch_28_i : std_discr_ch
     generic map (
-      ch_label => x"001B",
+      ch_label => x"AAAB",
       FIFO_len => FIFO_len
     )
     port map (
@@ -376,7 +376,7 @@ begin
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(27), --
       unloading_done     => i_unloading_done(27),--
-      std_discr_label    => std_discr_label(27) --
+      std_discr_label    => ch_label(27) --
     );
 
     --------------------------------------------------------------------------------------

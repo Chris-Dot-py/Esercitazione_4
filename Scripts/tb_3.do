@@ -117,5 +117,9 @@ add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowba
 add wave -noupdate -expand -group packet_manager -radix unsigned -radixshowbase 0 /tb_3/packet_manager_i/total_len
 add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/send_packet_placeholder
 add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/cnt_en
-add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/cnt
+add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/total_data_blocks
+add wave -noupdate -expand -group packet_manager -radix unsigned /tb_3/packet_manager_i/cnt
+add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/i
+add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/j
+add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/packet_out
 run 28 us
