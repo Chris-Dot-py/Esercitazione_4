@@ -35,7 +35,6 @@ add wave -noupdate -group spi_master /tb_3/spi_master_i/timing_cnt
 add wave -noupdate -group spi_master /tb_3/spi_master_i/term_cnt
 add wave -noupdate -group spi_master /tb_3/spi_master_i/sclk_w
 add wave -noupdate -group spi_master /tb_3/spi_master_i/mosi_w
-add wave -noupdate -group spi_master /tb_3/spi_master_i/csn_w
 add wave -noupdate -group spi_master /tb_3/spi_master_i/sense_w
 add wave -noupdate -group spi_master /tb_3/spi_master_i/data_ready_w
 add wave -noupdate -group spi_master /tb_3/spi_master_i/c_op_codes
@@ -82,44 +81,25 @@ add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/reset
 add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/current_state
 add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/send_snf_data
 
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/ch_unavailable(31)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/send_data_block(31)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/load_pulse(31)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block(31)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block_dim(31)
-
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/ch_unavailable(30)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/send_data_block(30)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/load_pulse(30)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block(30)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block_dim(30)
-
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/ch_unavailable(29)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/send_data_block(29)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/load_pulse(29)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block(29)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block_dim(29)
-
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/ch_unavailable(28)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/send_data_block(28)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/load_pulse(28)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block(28)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block_dim(28)
-
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/ch_unavailable(27)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/send_data_block(27)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/load_pulse(27)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block(27)
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block_dim(27)
+add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/ch_unavailable
+add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/send_data_block
+add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/load_pulse
 
 
+add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_label
+add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/block_data
+add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/block_data_dim
+
+add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block
+add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block_dim
 
 add wave -noupdate -expand -group packet_manager -radix unsigned -radixshowbase 0 /tb_3/packet_manager_i/total_len
 add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/send_packet_placeholder
 add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/cnt_en
 add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/total_data_blocks
+add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/index
 add wave -noupdate -expand -group packet_manager -radix unsigned /tb_3/packet_manager_i/cnt
 add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/i
 add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/j
 add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/packet_out
-run 28 us
+run 100 us

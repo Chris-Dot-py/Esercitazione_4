@@ -70,7 +70,6 @@ architecture spi_master_arch of spi_master is
     -- output wirings
     signal sclk_w  : std_logic;
     signal mosi_w  : std_logic;
-    signal csn_w   : std_logic_vector(number_of_slaves-1 downto 0);
 
     signal sense_w : std_logic_vector(31 downto 0);
     signal data_ready_w : std_logic;

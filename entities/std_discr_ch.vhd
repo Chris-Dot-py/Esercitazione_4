@@ -13,6 +13,7 @@ entity std_discr_ch is
         clock : in std_logic; -- use 16.666MHz clock
         reset : in std_logic;
 
+        freeze_data : in std_logic;
         rd_op : in std_logic; -- when 1, switch FIFO
         wr_op : in std_logic; -- use data_ready
         wr_data : in std_logic; -- sense(n) -- disabilitato se disable attivo
@@ -45,6 +46,8 @@ architecture std_discr_ch_arch of std_discr_ch is
     --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
+
+    -- maybe I can use just one, 2 arrays maybe isn't necessary
     type t_FIFO is array (0 to 1) of std_logic_vector(FIFO_len-1 downto 0);
     signal bit_FIFO : t_FIFO;
 
@@ -66,6 +69,8 @@ architecture std_discr_ch_arch of std_discr_ch is
     -- wirings
     signal rd_data_w : std_logic_vector(9 downto 0);
     signal ch_unavailable_w : std_logic;
+
+    -- no necessary: load_pulse (to be changed to data_ready) is enough
     signal unloading_done_w : std_logic;
     signal o_bits_stored_w : std_logic_vector(3 downto 0);
     signal std_discr_o_w : std_logic; -- not implemented yet
@@ -74,7 +79,7 @@ architecture std_discr_ch_arch of std_discr_ch is
     signal r_config : std_logic_vector(3 downto 0);
     signal r_status : std_logic_vector(3 downto 0);
 
-    -- load_pulse
+    -- load_pulse:
     signal load_pulse_w : std_logic;
 
     --LABEL
