@@ -5,6 +5,7 @@ vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/packet_manager.vh
 vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/spi_master.vhd
 vcom C:/Users/christian.manuel/github/Esercitazione_4/entities/std_discr_ch.vhd
 vcom C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_3.vhd
+vcom C:/Users/christian.manuel/github/Esercitazione_4/testbenches/tb_output_analysis.vhd
 vsim -gui work.tb_3
 configure wave -namecolwidth 314
 configure wave -valuecolwidth 100
@@ -101,5 +102,18 @@ add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet
 add wave -noupdate -expand -group packet_manager -radix unsigned /tb_3/packet_manager_i/cnt
 add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/i
 add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/j
+add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/receive_snf_data
 add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/packet_out
+
+add wave -noupdate -expand -group {output analysis} /tb_3/tb_output_analysis_i/receive_snf_data
+add wave -noupdate -expand -group {output analysis} /tb_3/tb_output_analysis_i/packet_in
+add wave -noupdate -expand -group {output analysis} /tb_3/tb_output_analysis_i/current_state
+add wave -noupdate -expand -group {output analysis} -radix unsigned -radixshowbase 0 /tb_3/tb_output_analysis_i/total_len
+add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/ch_label
+add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/data_block_dim
+add wave -noupdate -expand -group {output analysis} -radix unsigned -radixshowbase 0 /tb_3/tb_output_analysis_i/cnt
+add wave -noupdate -expand -group {output analysis} -radix unsigned -radixshowbase 0 /tb_3/tb_output_analysis_i/i
+add wave -noupdate -expand -group {output analysis} -radix unsigned -radixshowbase 0 /tb_3/tb_output_analysis_i/j
+add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/shift_register
+add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/data_block
 run 100 us

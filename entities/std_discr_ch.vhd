@@ -13,7 +13,6 @@ entity std_discr_ch is
         clock : in std_logic; -- use 16.666MHz clock
         reset : in std_logic;
 
-        freeze_data : in std_logic;
         rd_op : in std_logic; -- when 1, switch FIFO
         wr_op : in std_logic; -- use data_ready
         wr_data : in std_logic; -- sense(n) -- disabilitato se disable attivo

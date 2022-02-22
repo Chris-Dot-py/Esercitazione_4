@@ -14,10 +14,10 @@ entity packet_manager is
         reset : in std_logic;
 
         send_snf_data : in std_logic;
+        receive_snf_data : out std_logic;
         packet_out : out std_logic;
 
         send_data_block : out std_logic_vector(31 downto 0);
-        freeze_data : out std_logic_vector(31 downto 0);
         unloading_done : in std_logic_vector(31 downto 0);
         ch_unavailable : in std_logic_vector(31 downto 0);
         load_pulse : in std_logic_vector(31 downto 0);
@@ -28,10 +28,6 @@ entity packet_manager is
 end entity packet_manager;
 
 architecture packet_manager_arch of packet_manager is
-    --------------------------------------------------------------------------------------
-    -- components
-    --------------------------------------------------------------------------------------
-
     --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
@@ -65,14 +61,12 @@ architecture packet_manager_arch of packet_manager is
 
 begin
     --------------------------------------------------------------------------------------
-    -- instantiations
-    --------------------------------------------------------------------------------------
-    --------------------------------------------------------------------------------------
     -- processes
     --------------------------------------------------------------------------------------
     send_data_block <= send_data_block_w;
     packet_out <= packet_out_w when current_state = send_packet else
                     'Z'; -- 'Z' is just for waveform readability
+
     p_fsm : process(clock, reset)
         -- just for testing
         variable L : line;
@@ -90,6 +84,7 @@ begin
             i <= 0;
             j <= 0;
 
+            receive_snf_data <= '0';
             packet_out_w <= '0';
             send_packet_placeholder <= (others => (others => '0'));
             index <= 31;
@@ -124,8 +119,6 @@ begin
                     if cnt <= 31 then
                         -- need to add a statement that waits for the unloading of data
                         -- block to be done
-                        -- if  load_pulse(cnt) = '1' OR ch_unavailable(cnt) = '1' then
-
                             ch_data_block(cnt) <=   block_data(cnt);
                             ch_data_block_dim(cnt) <= block_data_dim(cnt);
 
@@ -133,38 +126,38 @@ begin
                             if ch_unavailable(cnt) = '0' then
                                 send_packet_placeholder(index)(29 downto 14) <= ch_label(cnt);
 
-                                    -- just for testing
-                                    write(L, string'("channel "));
-                                    write(L,cnt, field => 2);
-                                    write(L,string'(" has "));
-                                    write(L,string'("label : "));
-                                    for k in 1 to 16 loop
-                                        write(L, ch_label(cnt)(16 - k));
-                                        if (k mod 4) = 0 then
-                                            write(L,string'("_"));
-                                        end if;
-                                    end loop;
-                                    write(L,string'(" "));
+                                    -- -- just for testing
+                                    -- write(L, string'("channel "));
+                                    -- write(L,cnt, field => 2);
+                                    -- write(L,string'(" has "));
+                                    -- write(L,string'("label : "));
+                                    -- for k in 1 to 16 loop
+                                    --     write(L, ch_label(cnt)(16 - k));
+                                    --     if (k mod 4) = 0 then
+                                    --         write(L,string'("_"));
+                                    --     end if;
+                                    -- end loop;
+                                    -- write(L,string'(" "));
 
                                 send_packet_placeholder(index)(13 downto 10) <= block_data_dim(cnt);
 
-                                    -- just for testing
-                                    write(L,string'("block_data dim: "));
-                                    write(L, block_data_dim(cnt));
-                                    write(L,string'(" "));
+                                    -- -- just for testing
+                                    -- write(L,string'("block_data dim: "));
+                                    -- write(L, block_data_dim(cnt));
+                                    -- write(L,string'(" "));
 
                                 send_packet_placeholder(index)(9 downto 0) <= block_data(cnt);
 
-                                    -- just for testing
-                                    write(L,string'("block_data : "));
-                                    for k in 1 to 10 loop
-                                        write(L, block_data(cnt)(10 - k));
-                                        if (k mod 4) = 0 then
-                                            write(L,string'("_"));
-                                        end if;
-                                    end loop;
-                                    write(L,string'(" "));
-                                    writeline(output, L);
+                                    -- -- just for testing
+                                    -- write(L,string'("block_data : "));
+                                    -- for k in 1 to 10 loop
+                                    --     write(L, block_data(cnt)(10 - k));
+                                    --     if (k mod 4) = 0 then
+                                    --         write(L,string'("_"));
+                                    --     end if;
+                                    -- end loop;
+                                    -- write(L,string'(" "));
+                                    -- writeline(output, L);
 
                                 if index > 0 then
                                     index <= index - 1;
@@ -175,13 +168,11 @@ begin
 
                             send_data_block_w(cnt) <= '0';
                             cnt <= cnt + 1;
-                        -- else
-                        --     send_data_block_w(cnt) <= '1';
-                        -- end if;
                     else
                         cnt <= 0;
                         index <= 31;
                         total_data_blocks <= total_data_blocks + 1; -- for total_len
+                        total_len <= x"0010";
                         current_state <= calc_total_len;
                     end if;
 
@@ -191,7 +182,9 @@ begin
                     -- add all block_dims and use it as terminal cnt for the send process
                     if  cnt < 32 then
                         if ch_unavailable(cnt) = '0' then
-                            total_len <= total_len + 20 + conv_integer(send_packet_placeholder(31 - cnt)(13 downto 10));
+                            total_len <= total_len + x"14" + block_data_dim(cnt);
+                            -- write(L, block_data_dim(cnt));
+                            -- writeline(output, L);
                         end if;
                         cnt <= cnt + 1;
                     else
@@ -207,22 +200,23 @@ begin
                 when send_packet =>
                 --========
                     if cnt < total_len then
+                        receive_snf_data <= '1';
 
                         if j < total_data_blocks then
                             -- send total_len first
                             if j = 0 then
                                 if i < 15 then
                                     packet_out_w <= send_packet_placeholder(32 - j)(29 - i);
-                                    write(L, send_packet_placeholder(32 - j)(29 - i));
-                                    if ((i + 1) mod 4) = 0 then
-                                        write(L, string'("_"));
-                                    end if;
+                                    -- write(L, send_packet_placeholder(32 - j)(29 - i));
+                                    -- if ((i + 1) mod 4) = 0 then
+                                    --     write(L, string'("_"));
+                                    -- end if;
                                     i <= i + 1;
                                 else
                                     packet_out_w <= send_packet_placeholder(32 - j)(29 - 15);
-                                        write(L, send_packet_placeholder(32 - j)(29 - i));
-                                        write(L, string'(" has been sent as total_len "));
-                                        writeline(output, L);
+                                        -- write(L, send_packet_placeholder(32 - j)(29 - i));
+                                        -- write(L, string'(" has been sent as total_len "));
+                                        -- writeline(output, L);
                                     i <= 0;
                                     j <= j + 1;
                                 end if;
@@ -230,17 +224,17 @@ begin
                                 -- send data_blocks
                                 if i < (20 + conv_integer(send_packet_placeholder(32 - j)(13 downto 10)) - 1) then
                                     packet_out_w <= send_packet_placeholder(32 - j)(29 - i);
-                                        write(L, send_packet_placeholder(32 - j)(29 - i));
-                                    if ((i + 1) mod 4) = 0 then
-                                        write(L, string'("_"));
-                                    end if;
+                                    --     write(L, send_packet_placeholder(32 - j)(29 - i));
+                                    -- if ((i + 1) mod 4) = 0 then
+                                    --     write(L, string'("_"));
+                                    -- end if;
                                     i <= i + 1;
                                 else
                                     packet_out_w <= send_packet_placeholder(32 - j)(29 - (20 + conv_integer(send_packet_placeholder(32 - j)(13 downto 10)) - 1));
-                                        write(L, send_packet_placeholder(32 - j)(29 - i));
-                                        write(L, string'(" has been sent as data block : "));
-                                        write(L, j);
-                                        writeline(output, L);
+                                        -- write(L, send_packet_placeholder(32 - j)(29 - i));
+                                        -- write(L, string'(" has been sent as data block : "));
+                                        -- write(L, j);
+                                        -- writeline(output, L);
                                     i <= 0;
                                     j <= j + 1;
                                 end if;
@@ -252,8 +246,9 @@ begin
                         cnt <= 0;
                         i <= 0;
                         j <= 0;
+                        receive_snf_data <= '0';
                         total_data_blocks <= (others => '0');
-                        total_len <= (others => '0');
+                        total_len <= x"0010";
                         send_packet_placeholder <= (others => (others => '0'));
                         current_state <= idle;
                     end if;

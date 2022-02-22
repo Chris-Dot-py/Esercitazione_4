@@ -9,10 +9,30 @@ use std.textio.all;
 library work;
 use work.pkg_signals.all;
 
-entity tb_3 is
-end entity tb_3;
+entity std_discr_if is
+    port(
+        clock : in std_logic; -- 100 MHz
+        reset : in std_logic;
+        -- spi bus
+        sclk : out std_logic;
+        mosi : out std_logic;
+        miso : in std_logic;
+        csn : out std_logic;
 
-architecture tb_3_arch of tb_3 is
+        -- interf proc
+        config_mode : in std_logic;
+        spi_cmd : in std_logic;
+        HI_threshold : in std_logic_vector(7 downto 0);
+        LO_threshold : in std_logic_vector(7 downto 0);
+
+
+        -- packet out
+        tx_packet : out std_logic
+
+    );
+end entity std_discr_if;
+
+architecture std_discr_if_arch of std_discr_if is
     --------------------------------------------------------------------------------------
     -- component declarations
     --------------------------------------------------------------------------------------
@@ -37,15 +57,6 @@ architecture tb_3_arch of tb_3 is
       clock_16MHz   : out std_logic
     );
     end component spi_master;
-
-    component HI_8345
-    port (
-      sclk : in  std_logic;
-      mosi : in  std_logic;
-      miso : out std_logic;
-      csn  : in  std_logic
-    );
-    end component HI_8345;
 
     component std_discr_ch
     generic (
@@ -92,15 +103,6 @@ architecture tb_3_arch of tb_3 is
       block_data_dim  : in  t_block_data_dim
     );
     end component packet_manager;
-
-    component tb_output_analysis
-    port (
-      clock            : in  std_logic;
-      reset            : in  std_logic;
-      receive_snf_data : in  std_logic;
-      packet_in        : in  std_logic
-    );
-    end component tb_output_analysis;
 
     --------------------------------------------------------------------------------------
     -- constants
@@ -178,9 +180,6 @@ architecture tb_3_arch of tb_3 is
     signal block_data_dim  : t_block_data_dim;
     signal ch_label        : t_ch_label;
 
-    -- config signals
-    signal disable_ch : std_logic_vector(31 downto 0);
-
 begin
     --------------------------------------------------------------------------------------
     -- instantiations
@@ -253,39 +252,6 @@ begin
       packet_in        => packet_out
     );
 
-    -- CONFIGURATIONS
-    disable_ch(31) <= '0';
-    disable_ch(30) <= '0';
-    disable_ch(29) <=  '0';
-    disable_ch(28) <= '0';
-    disable_ch(27) <= '0';
-    disable_ch(26) <= '0';
-    disable_ch(25) <= '0';
-    disable_ch(24) <= '0';
-    disable_ch(23) <= '0';
-    disable_ch(22) <= '0';
-    disable_ch(21) <= '0';
-    disable_ch(20) <= '0';
-    disable_ch(19) <= '0';
-    disable_ch(18) <= '0';
-    disable_ch(17) <= '0';
-    disable_ch(16) <= '0';
-    disable_ch(15) <= '0';
-    disable_ch(14) <= '0';
-    disable_ch(13) <= '0';
-    disable_ch(12) <= '0';
-    disable_ch(11) <= '0';
-    disable_ch(10) <= '0';
-    disable_ch(9) <= '0';
-    disable_ch(8) <= '0';
-    disable_ch(7) <= '0';
-    disable_ch(6) <= '0';
-    disable_ch(5) <= '0';
-    disable_ch(4) <= '0';
-    disable_ch(3) <= '0';
-    disable_ch(1) <= '0';
-    disable_ch(2) <= '0';
-    disable_ch(0) <= '0';
 
     ch_32_i : std_discr_ch
     generic map (
@@ -305,7 +271,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(31), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -334,7 +300,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(30), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -363,7 +329,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(29), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -392,7 +358,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(28), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -421,7 +387,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(27), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -450,7 +416,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(26), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -479,7 +445,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(25), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -508,7 +474,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(24), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -537,7 +503,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(23), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -566,7 +532,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(22), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -595,7 +561,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(21), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -624,7 +590,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(20), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -653,7 +619,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(19), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -682,7 +648,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(18), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -711,7 +677,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(17), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -740,7 +706,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(16), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -769,7 +735,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(15), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -798,7 +764,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(14), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -827,7 +793,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(13), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -856,7 +822,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(12), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -885,7 +851,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(11), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -914,7 +880,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(10), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -943,7 +909,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(9), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -972,7 +938,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(8), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -1001,7 +967,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(7), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -1030,7 +996,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(6), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -1059,7 +1025,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(5), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -1088,7 +1054,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(4), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -1117,7 +1083,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(3), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -1146,7 +1112,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(2), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -1175,7 +1141,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(1), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -1204,7 +1170,7 @@ begin
       std_discr_diag     => '0', --
       std_discr_o        => std_discr_o,--
       set_config         => set_config,--
-      std_discr_disable  => disable_ch(0), --
+      std_discr_disable  => '0', --
       std_discr_dir      => '0',--
       std_discr_sbit_en  => '0', --
       std_discr_ibit_en  => '0', --
@@ -1214,100 +1180,4 @@ begin
       unloading_done     => i_unloading_done(0),--
       std_discr_label    => ch_label(0) --
     );
-
-    --------------------------------------------------------------------------------------
-    -- processes
-    --------------------------------------------------------------------------------------
-    p_gen_clk_100MHz : process
-    begin
-        clock <= '0';
-        wait for 5 ns;
-        clock <= '1';
-        wait for 5 ns;
-    end process;
-
-    p_gen_rst : process
-    begin
-        reset <= '0';
-        set_config <= '0';
-        wait for 1 ns;
-        reset <= '1';
-        set_config <= '1';
-        wait for 200 ns;
-        set_config <= '0';
-
-        wait;
-    end process;
-
-    p_rd_op : process
-    begin
-        wait for 500 ns;
-        for i in 0 to 4 loop
-            wait until falling_edge(data_ready);
-            if i = 4 then
-                -- rd_op
-                wait for 400 ns;
-                wait until rising_edge(clock_16MHz);
-                send_snf_data <= '1';
-                wait until rising_edge(clock_16MHz);
-                send_snf_data <= '0';
-            end if;
-        end loop;
-
-        for i in 0 to 8 loop
-            if i = 8 then
-                -- rd_op
-                wait for 2700 ns;
-                wait until rising_edge(clock_16MHz);
-                send_snf_data <= '1';
-                wait until rising_edge(clock_16MHz);
-                send_snf_data <= '0';
-            end if;
-            wait until falling_edge(data_ready);
-        end loop;
-
-        for i in 0 to 9 loop
-            if i = 3 then
-                -- rd_op
-                wait for 3000 ns;
-                wait until rising_edge(clock_16MHz);
-                send_snf_data <= '1';
-                wait until rising_edge(clock_16MHz);
-                send_snf_data <= '0';
-            end if;
-            wait until falling_edge(data_ready);
-        end loop;
-        wait;
-    end process;
-
-    p_wr_op: process
-    begin
-        wait for 500 ns;
-        -- store data
-        for i in 0 to 5 loop
-            wait for 3 us;
-            rd_all_ssb <= '1';
-            wait until rising_edge(busy);
-            rd_all_ssb <= '0';
-        end loop;
-
-        -- store data
-        for i in 0 to 8 loop
-            wait for 3 us;
-            rd_all_ssb <= '1';
-            wait until rising_edge(busy);
-            rd_all_ssb <= '0';
-        end loop;
-
-        -- store data
-        for i in 0 to 8 loop
-            wait for 3 us;
-            rd_all_ssb <= '1';
-            wait until rising_edge(busy);
-            rd_all_ssb <= '0';
-        end loop;
-        wait;
-    end process;
-
-
 end architecture;
