@@ -1,110 +1,93 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate -group spi_master /tb_3/clock
-add wave -noupdate -group spi_master /tb_3/reset
-add wave -noupdate -group spi_master /tb_3/spi_master_i/busy
-add wave -noupdate -group spi_master /tb_3/spi_master_i/spi_cmd
-add wave -noupdate -group spi_master /tb_3/spi_master_i/rd_regs
-add wave -noupdate -group spi_master /tb_3/spi_master_i/data_byte_in
-add wave -noupdate -group spi_master /tb_3/spi_master_i/slv_addr
-add wave -noupdate -group spi_master /tb_3/spi_master_i/sense
-add wave -noupdate -group spi_master /tb_3/spi_master_i/data_ready
-add wave -noupdate -group spi_master /tb_3/spi_master_i/sclk
-add wave -noupdate -group spi_master /tb_3/spi_master_i/mosi
-add wave -noupdate -group spi_master /tb_3/spi_master_i/miso
-add wave -noupdate -group spi_master /tb_3/spi_master_i/csn
-add wave -noupdate -group spi_master /tb_3/spi_master_i/clock_16MHz
-add wave -noupdate -group spi_master /tb_3/spi_master_i/current_state
-add wave -noupdate -group spi_master /tb_3/spi_master_i/r_data_byte_1
-add wave -noupdate -group spi_master /tb_3/spi_master_i/r_data_byte_0
-add wave -noupdate -group spi_master /tb_3/spi_master_i/r_hyst_val
-add wave -noupdate -group spi_master /tb_3/spi_master_i/r_center_val
-add wave -noupdate -group spi_master /tb_3/spi_master_i/op_code
-add wave -noupdate -group spi_master /tb_3/spi_master_i/cnt
-add wave -noupdate -group spi_master /tb_3/spi_master_i/clk_internal
-add wave -noupdate -group spi_master /tb_3/spi_master_i/timing_cnt_en
-add wave -noupdate -group spi_master /tb_3/spi_master_i/timing_cnt
-add wave -noupdate -group spi_master /tb_3/spi_master_i/term_cnt
-add wave -noupdate -group spi_master /tb_3/spi_master_i/sclk_w
-add wave -noupdate -group spi_master /tb_3/spi_master_i/mosi_w
-add wave -noupdate -group spi_master /tb_3/spi_master_i/sense_w
-add wave -noupdate -group spi_master /tb_3/spi_master_i/data_ready_w
-add wave -noupdate -group spi_master /tb_3/spi_master_i/c_op_codes
-add wave -noupdate -group holt /tb_3/HI_8345_i/current_state
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_ctrl
-add wave -noupdate -group holt /tb_3/HI_8345_i/srst
-add wave -noupdate -group holt /tb_3/HI_8345_i/test
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_psen
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_tmdata
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_gohys
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_gocval
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_sohys
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_socval
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_SSB_0
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_SSB_1
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_SSB_2
-add wave -noupdate -group holt /tb_3/HI_8345_i/r_SSB_3
-add wave -noupdate -group holt /tb_3/HI_8345_i/c_sense_vals
-add wave -noupdate -group holt /tb_3/HI_8345_i/op_code
-add wave -noupdate -group holt /tb_3/HI_8345_i/data_byte_1
-add wave -noupdate -group holt /tb_3/HI_8345_i/data_byte_0
-add wave -noupdate -group holt /tb_3/HI_8345_i/cnt
-add wave -noupdate -group holt /tb_3/HI_8345_i/term_cnt
-add wave -noupdate -group holt /tb_3/HI_8345_i/shift_register
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/clock
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/ch_unavailable
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/load_pulse
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/unloading_done
-add wave -noupdate -group ch_32 -radix hexadecimal -radixshowbase 0 /tb_3/ch_32_i/rd_data
-add wave -noupdate -group ch_32 -radix unsigned -radixshowbase 0 /tb_3/ch_32_i/o_bits_stored
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/wr_data
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/send_data_block
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/wr_bit
-add wave -noupdate -group ch_32 -radix hexadecimal -radixshowbase 0 /tb_3/ch_32_i/bit_FIFO(1)
-add wave -noupdate -group ch_32 -radix unsigned -radixshowbase 0 /tb_3/ch_32_i/bits_stored(1)
-add wave -noupdate -group ch_32 -color {Cornflower Blue} -radix unsigned -radixshowbase 0 /tb_3/ch_32_i/wr_index
-add wave -noupdate -group ch_32 -radix hexadecimal -radixshowbase 0 /tb_3/ch_32_i/bit_FIFO(0)
-add wave -noupdate -group ch_32 -radix unsigned -radixshowbase 0 /tb_3/ch_32_i/bits_stored(0)
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/FIFO_switch
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/r_config
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/std_discr_label
-add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/clock
-add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/reset
-add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/current_state
-add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/send_snf_data
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/ch_unavailable
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/send_data_block
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/load_pulse
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_label
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/block_data
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/block_data_dim
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/ch_data_block_dim
-add wave -noupdate -expand -group packet_manager -radix unsigned -radixshowbase 0 /tb_3/packet_manager_i/total_len
-add wave -noupdate -expand -group packet_manager -radix hexadecimal -radixshowbase 0 /tb_3/packet_manager_i/send_packet_placeholder
-add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/cnt_en
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/total_data_blocks
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/index
-add wave -noupdate -expand -group packet_manager -radix unsigned /tb_3/packet_manager_i/cnt
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/i
-add wave -noupdate -expand -group packet_manager -radix hexadecimal /tb_3/packet_manager_i/j
-add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/receive_snf_data
-add wave -noupdate -expand -group packet_manager /tb_3/packet_manager_i/packet_out
-add wave -noupdate -expand -group {output analysis} /tb_3/tb_output_analysis_i/receive_snf_data
-add wave -noupdate -expand -group {output analysis} /tb_3/tb_output_analysis_i/packet_in
-add wave -noupdate -expand -group {output analysis} /tb_3/tb_output_analysis_i/current_state
-add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/total_len
-add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/ch_label
-add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/data_block_dim
-add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/cnt
-add wave -noupdate -expand -group {output analysis} -radix unsigned -radixshowbase 0 /tb_3/tb_output_analysis_i/i
-add wave -noupdate -expand -group {output analysis} -radix unsigned -radixshowbase 0 /tb_3/tb_output_analysis_i/j
-add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/shift_register
-add wave -noupdate -expand -group {output analysis} -radix hexadecimal -radixshowbase 0 /tb_3/tb_output_analysis_i/data_block
+add wave -noupdate -radix hexadecimal /tb_4/clock
+add wave -noupdate -radix hexadecimal /tb_4/reset
+add wave -noupdate -radix hexadecimal /tb_4/config_mode
+add wave -noupdate -radix hexadecimal /tb_4/config_done
+add wave -noupdate -radix hexadecimal /tb_4/send_snf_data
+add wave -noupdate -radix hexadecimal /tb_4/set_config
+add wave -noupdate -radix hexadecimal /tb_4/disable_ch
+add wave -noupdate -group holt -radix hexadecimal /tb_4/HI_8345_i/sclk
+add wave -noupdate -group holt -radix hexadecimal /tb_4/HI_8345_i/mosi
+add wave -noupdate -group holt -radix hexadecimal /tb_4/HI_8345_i/miso
+add wave -noupdate -group holt -radix hexadecimal /tb_4/HI_8345_i/csn
+add wave -noupdate -group holt -radix hexadecimal /tb_4/HI_8345_i/current_state
+add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/reset
+add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/receive_snf_data
+add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/packet_in
+add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/current_state
+add wave -noupdate -group output_analyzer -radix unsigned /tb_4/tb_output_analysis_i/total_len
+add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/ch_label
+add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/data_block_dim
+add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/shift_register
+add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/data_block
+add wave -noupdate -group packet_manager -radix hexadecimal /tb_4/std_discr_if_i/packet_manager_i/send_snf_data
+add wave -noupdate -group packet_manager -radix hexadecimal /tb_4/std_discr_if_i/packet_manager_i/receive_snf_data
+add wave -noupdate -group packet_manager -radix hexadecimal /tb_4/std_discr_if_i/packet_manager_i/packet_out
+add wave -noupdate -group packet_manager -radix hexadecimal /tb_4/std_discr_if_i/packet_manager_i/current_state
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/send_snf_data
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/receive_snf_data
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/packet_out
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/config_mode
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/config_done
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/set_config
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/disable_ch
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/psen
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/HI_threshold
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/LO_threshold
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/busy_d
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/spi_cmd
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/rd_regs
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/data_byte_in
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/r_psen
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/r_HI_threshold
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/r_LO_threshold
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/send_data_block
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/o_data_ready
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/block_data
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/block_data_dim
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/ch_unavailable
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/ch_label
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/current_state
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/cnt
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/cnt_en
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/first_threshold_setup_done
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/data_byte_1_sent
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/SRes_done
+add wave -noupdate -group std_discr_if -radix hexadecimal /tb_4/std_discr_if_i/config_done_w
+add wave -noupdate -group spi -group spi_bus -radix hexadecimal /tb_4/std_discr_if_i/spi_master_i/sclk
+add wave -noupdate -group spi -group spi_bus -radix hexadecimal /tb_4/std_discr_if_i/spi_master_i/mosi
+add wave -noupdate -group spi -group spi_bus -radix hexadecimal /tb_4/std_discr_if_i/spi_master_i/miso
+add wave -noupdate -group spi -group spi_bus -radix hexadecimal /tb_4/std_discr_if_i/spi_master_i/csn
+add wave -noupdate -group spi /tb_4/std_discr_if_i/spi_master_i/data_ready
+add wave -noupdate -group spi -radix hexadecimal /tb_4/std_discr_if_i/busy
+add wave -noupdate -group spi -radix hexadecimal /tb_4/std_discr_if_i/spi_master_i/sense
+add wave -noupdate -group spi -radix hexadecimal /tb_4/std_discr_if_i/spi_master_i/current_state
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/rd_op
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/wr_op
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/wr_data
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/load_pulse
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/rd_data
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/o_bits_stored
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/set_config
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/std_discr_disable
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/ch_unavailable
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/std_discr_label
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/bit_FIFO(1)
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/bits_stored(1)
+add wave -noupdate -group ch_32 -color cyan -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/wr_index
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/bit_FIFO(0)
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/bits_stored(0)
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/rd_op_d
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/wr_bit
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/send_data_block
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/FIFO_switch
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/r_config
+add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/r_status
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {0 ps} 0}
-quietly wave cursor active 0
-configure wave -namecolwidth 314
+WaveRestoreCursors {{Cursor 1} {36067571 ps} 0}
+quietly wave cursor active 1
+configure wave -namecolwidth 452
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
 configure wave -signalnamewidth 0
@@ -118,4 +101,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {21761 ps}
+WaveRestoreZoom {0 ps} {136500 ns}

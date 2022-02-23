@@ -27,6 +27,8 @@ architecture tb_3_arch of tb_3 is
       spi_cmd       : in  std_logic_vector(7 downto 0);
       rd_regs       : in  std_logic_vector(7 downto 0);
       data_byte_in  : in  std_logic_vector(7 downto 0);
+      HI_threshold : in std_logic_vector(7 downto 0);
+      LO_threshold : in std_logic_vector(7 downto 0);
       slv_addr      : in  std_logic_vector(number_of_slaves-1 downto 0);
       sense         : out std_logic_vector(31 downto 0);
       data_ready    : out std_logic;
@@ -71,7 +73,6 @@ architecture tb_3_arch of tb_3 is
       std_discr_sbit_alm : out std_logic;
       std_discr_ibit_alm : out std_logic;
       ch_unavailable     : out std_logic;
-      unloading_done     : out std_logic;
       std_discr_label    : out std_logic_vector(15 downto 0)
     );
     end component std_discr_ch;
@@ -84,7 +85,6 @@ architecture tb_3_arch of tb_3 is
       receive_snf_data : out std_logic;
       packet_out      : out std_logic;
       send_data_block : out std_logic_vector(31 downto 0);
-      unloading_done  : in  std_logic_vector(31 downto 0);
       ch_unavailable  : in  std_logic_vector(31 downto 0);
       load_pulse      : in  std_logic_vector(31 downto 0);
       ch_label        : in t_ch_label;
@@ -129,6 +129,9 @@ architecture tb_3_arch of tb_3 is
     signal miso           : std_logic;
     signal csn            : std_logic;
 
+    signal r_HI_threshold : std_logic_vector(7 downto 0);
+    signal r_LO_threshold : std_logic_vector(7 downto 0);
+
     -- spi_cmd
     signal set_ctrl       : std_logic := '0';
     signal set_psen       : std_logic := '0';
@@ -164,14 +167,12 @@ architecture tb_3_arch of tb_3 is
     signal std_discr_sbit_alm : std_logic;
     signal std_discr_ibit_alm : std_logic;
     signal ch_unavailable     : std_logic;
-    signal unloading_done     : std_logic;
 
     -- packet_manager
     signal send_snf_data   : std_logic := '0';
     signal receive_snf_data : std_logic ;
     signal packet_out      : std_logic;
     signal send_data_block : std_logic_vector(31 downto 0) := (others => '0');
-    signal i_unloading_done  : std_logic_vector(31 downto 0) := (others => '0');
     signal i_ch_unavailable  : std_logic_vector(31 downto 0) := (others => '0');
     signal i_load_pulse      : std_logic_vector(31 downto 0) := (others => '0');
     signal block_data      : t_block_data;
@@ -211,6 +212,8 @@ begin
         rd_regs(1)        => rd_r_SSB2,
         rd_regs(0)        => rd_r_SSB3,
         data_byte_in  => data_byte_in,
+        HI_threshold => r_HI_threshold,
+        LO_threshold => r_LO_threshold,
         slv_addr      => slv_addr,
         sense         => sense,
         data_ready    => data_ready,
@@ -237,7 +240,6 @@ begin
       packet_out      => packet_out,
       send_data_block => send_data_block,
 
-      unloading_done  => i_unloading_done,
       ch_unavailable => i_ch_unavailable,
       load_pulse      => i_load_pulse,
       block_data      => block_data,
@@ -312,7 +314,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(31), --
-      unloading_done     => i_unloading_done(31),--
+
       std_discr_label    => ch_label(31) --
     );
 
@@ -341,7 +343,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(30), --
-      unloading_done     => i_unloading_done(30),--
+
       std_discr_label    => ch_label(30) --
     );
 
@@ -370,7 +372,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(29), --
-      unloading_done     => i_unloading_done(29),--
+
       std_discr_label    => ch_label(29) --
     );
 
@@ -399,7 +401,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(28), --
-      unloading_done     => i_unloading_done(28),--
+
       std_discr_label    => ch_label(28) --
     );
 
@@ -428,7 +430,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(27), --
-      unloading_done     => i_unloading_done(27),--
+
       std_discr_label    => ch_label(27) --
     );
 
@@ -457,7 +459,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(26), --
-      unloading_done     => i_unloading_done(26),--
+
       std_discr_label    => ch_label(26) --
     );
 
@@ -486,7 +488,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(25), --
-      unloading_done     => i_unloading_done(25),--
+
       std_discr_label    => ch_label(25) --
     );
 
@@ -515,7 +517,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(24), --
-      unloading_done     => i_unloading_done(24),--
+
       std_discr_label    => ch_label(24) --
     );
 
@@ -544,7 +546,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(23), --
-      unloading_done     => i_unloading_done(23),--
+
       std_discr_label    => ch_label(23) --
     );
 
@@ -573,7 +575,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(22), --
-      unloading_done     => i_unloading_done(22),--
+
       std_discr_label    => ch_label(22) --
     );
 
@@ -602,7 +604,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(21), --
-      unloading_done     => i_unloading_done(21),--
+
       std_discr_label    => ch_label(21) --
     );
 
@@ -631,7 +633,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(20), --
-      unloading_done     => i_unloading_done(20),--
+
       std_discr_label    => ch_label(20) --
     );
 
@@ -660,7 +662,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(19), --
-      unloading_done     => i_unloading_done(19),--
+
       std_discr_label    => ch_label(19) --
     );
 
@@ -689,7 +691,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(18), --
-      unloading_done     => i_unloading_done(18),--
+
       std_discr_label    => ch_label(18) --
     );
 
@@ -718,7 +720,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(17), --
-      unloading_done     => i_unloading_done(17),--
+
       std_discr_label    => ch_label(17) --
     );
 
@@ -747,7 +749,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(16), --
-      unloading_done     => i_unloading_done(16),--
+
       std_discr_label    => ch_label(16) --
     );
 
@@ -776,7 +778,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(15), --
-      unloading_done     => i_unloading_done(15),--
+
       std_discr_label    => ch_label(15) --
     );
 
@@ -805,7 +807,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(14), --
-      unloading_done     => i_unloading_done(14),--
+
       std_discr_label    => ch_label(14) --
     );
 
@@ -834,7 +836,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(13), --
-      unloading_done     => i_unloading_done(13),--
+
       std_discr_label    => ch_label(13) --
     );
 
@@ -863,7 +865,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(12), --
-      unloading_done     => i_unloading_done(12),--
+
       std_discr_label    => ch_label(12) --
     );
 
@@ -892,7 +894,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(11), --
-      unloading_done     => i_unloading_done(11),--
+
       std_discr_label    => ch_label(11) --
     );
 
@@ -921,7 +923,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(10), --
-      unloading_done     => i_unloading_done(10),--
+
       std_discr_label    => ch_label(10) --
     );
 
@@ -950,7 +952,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(9), --
-      unloading_done     => i_unloading_done(9),--
+
       std_discr_label    => ch_label(9) --
     );
 
@@ -979,7 +981,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(8), --
-      unloading_done     => i_unloading_done(8),--
+
       std_discr_label    => ch_label(8) --
     );
 
@@ -1008,7 +1010,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(7), --
-      unloading_done     => i_unloading_done(7),--
+
       std_discr_label    => ch_label(7) --
     );
 
@@ -1037,7 +1039,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(6), --
-      unloading_done     => i_unloading_done(6),--
+
       std_discr_label    => ch_label(6) --
     );
 
@@ -1066,7 +1068,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(5), --
-      unloading_done     => i_unloading_done(5),--
+
       std_discr_label    => ch_label(5) --
     );
 
@@ -1095,7 +1097,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(4), --
-      unloading_done     => i_unloading_done(4),--
+
       std_discr_label    => ch_label(4) --
     );
 
@@ -1124,7 +1126,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(3), --
-      unloading_done     => i_unloading_done(3),--
+
       std_discr_label    => ch_label(3) --
     );
 
@@ -1153,7 +1155,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(2), --
-      unloading_done     => i_unloading_done(2),--
+
       std_discr_label    => ch_label(2) --
     );
 
@@ -1182,7 +1184,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(1), --
-      unloading_done     => i_unloading_done(1),--
+
       std_discr_label    => ch_label(1) --
     );
 
@@ -1211,7 +1213,7 @@ begin
       std_discr_sbit_alm => std_discr_sbit_alm, --
       std_discr_ibit_alm => std_discr_ibit_alm, --
       ch_unavailable     => i_ch_unavailable(0), --
-      unloading_done     => i_unloading_done(0),--
+
       std_discr_label    => ch_label(0) --
     );
 
@@ -1277,6 +1279,12 @@ begin
             end if;
             wait until falling_edge(data_ready);
         end loop;
+
+        wait for 10 us;
+        wait until rising_edge(clock_16MHz);
+        send_snf_data <= '1';
+        wait until rising_edge(clock_16MHz);
+        send_snf_data <= '0';
         wait;
     end process;
 

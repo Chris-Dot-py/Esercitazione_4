@@ -33,7 +33,6 @@ entity std_discr_ch is
         std_discr_sbit_alm : out std_logic;
         std_discr_ibit_alm : out std_logic;
         ch_unavailable : out std_logic;
-        unloading_done : out std_logic;
 
         std_discr_label : out std_logic_vector(15 downto 0)
 
@@ -62,15 +61,10 @@ architecture std_discr_ch_arch of std_discr_ch is
 
     signal wr_index : std_logic_vector(3 downto 0);
     signal FIFO_switch : std_logic;
-
-    signal cnt_en : std_logic;
-    signal cnt  : std_logic_vector(3 downto 0);
     -- wirings
     signal rd_data_w : std_logic_vector(9 downto 0);
     signal ch_unavailable_w : std_logic;
 
-    -- no necessary: load_pulse (to be changed to data_ready) is enough
-    signal unloading_done_w : std_logic;
     signal o_bits_stored_w : std_logic_vector(3 downto 0);
     signal std_discr_o_w : std_logic; -- not implemented yet
 
@@ -145,7 +139,6 @@ begin
     rd_data <= rd_data_w;
     o_bits_stored <= o_bits_stored_w;
     load_pulse <= load_pulse_w;
-    unloading_done <= unloading_done_w;
     P_fifo : process(clock, reset)
     begin
         if reset = '0' then
@@ -153,7 +146,6 @@ begin
             bits_stored <= (others => (others => '0'));
             FIFO_switch <= '0';
             load_pulse_w <= '0';
-            unloading_done_w <= '0';
             rd_data_w <= (others => '0');
             o_bits_stored_w <= (others => '0');
 
@@ -173,7 +165,6 @@ begin
             end if;
 
             -- raad buffer operation
-            unloading_done_w <= load_pulse_w;
             if ch_unavailable_W = '0' then
                 if send_data_block = '1' then
                     load_pulse_w <= '1';

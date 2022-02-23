@@ -63,7 +63,6 @@ add wave -noupdate -group holt /tb_3/HI_8345_i/shift_register
 add wave -noupdate -group ch_32 /tb_3/ch_32_i/clock
 add wave -noupdate -group ch_32 /tb_3/ch_32_i/ch_unavailable
 add wave -noupdate -group ch_32 /tb_3/ch_32_i/load_pulse
-add wave -noupdate -group ch_32 /tb_3/ch_32_i/unloading_done
 add wave -noupdate -group ch_32 -radix hexadecimal -radixshowbase 0 /tb_3/ch_32_i/rd_data
 add wave -noupdate -group ch_32 -radix unsigned -radixshowbase 0 /tb_3/ch_32_i/o_bits_stored
 add wave -noupdate -group ch_32 /tb_3/ch_32_i/wr_data

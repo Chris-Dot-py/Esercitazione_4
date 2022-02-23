@@ -23,6 +23,8 @@ entity spi_master is
         spi_cmd      : in std_logic_vector(7 downto 0); -- registro per comandi
         rd_regs      : in std_logic_vector(7 downto 0); -- registro per comandi di lettura
         data_byte_in : in std_logic_vector(7 downto 0); -- registro per dati da trasmettere
+        HI_threshold : in std_logic_vector(7 downto 0);
+        LO_threshold : in std_logic_vector(7 downto 0);
         slv_addr     : in  std_logic_vector(number_of_slaves-1 downto 0); -- indirizzo slave
         sense        : out std_logic_vector(31 downto 0);   -- da sistemare -> data_byte_out
         data_ready   : out std_logic;
@@ -51,13 +53,17 @@ architecture spi_master_arch of spi_master is
     --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
-    type states is (idle, send_op_code, set_cenhys, rd_from_slv, wr_to_slv);
+    type states is (idle, dec_cmd, start_timer, send_op_code, set_cenhys, rd_from_slv, wr_to_slv);
     signal current_state : states;
     -- registro placeholder per calcolo cenhys
     signal r_data_byte_1 : std_logic_vector(7 downto 0);
     signal r_data_byte_0 : std_logic_vector(7 downto 0);
     signal r_hyst_val : std_logic_vector(7 downto 0) := (others => '0');
     signal r_center_val : std_logic_vector(7 downto 0) := (others => '0');
+
+    signal spi_cmd_w : std_logic_vector(7 downto 0);
+    signal rd_regs_w : std_logic_vector(7 downto 0);
+    signal data_byte_in_w : std_logic_vector(7 downto 0);
     -- placeholder op_code
     signal op_code : std_logic_vector(7 downto 0);
     -- base counter for internal clock @ 16.66..MHz
@@ -70,9 +76,13 @@ architecture spi_master_arch of spi_master is
     -- output wirings
     signal sclk_w  : std_logic;
     signal mosi_w  : std_logic;
+    signal csn_w   : std_logic_vector(number_of_slaves-1 downto 0);
 
     signal sense_w : std_logic_vector(31 downto 0);
     signal data_ready_w : std_logic;
+
+    -- for deadtime
+    signal busy_d : std_logic;
 
 begin
     --------------------------------------------------------------------------------------
@@ -157,6 +167,14 @@ begin
     csn <= not or_reduce(timing_cnt) when slv_addr = "0" else
                     'Z';
 
+    p_deadtime : process(clk_internal, reset)
+    begin
+        if reset = '0' then
+            busy_d <= '0';
+        elsif rising_edge(clk_internal) then
+            busy_d <= or_reduce(timing_cnt);
+        end if;
+    end process;
 
     --------------------------------------------------------------------------------------
     -- fsm
@@ -174,28 +192,54 @@ begin
             r_data_byte_0 <= (others => '0');
             mosi_w <= '0';
 
+            spi_cmd_w <= (others => '0');
+            rd_regs_w <= (others => '0');
+            data_byte_in_w <= (others => '0');
 
             sense_w <= (others => '0');
         elsif rising_edge(clk_internal) then
+
+
             case( current_state ) is
                 --======
                 when idle =>
                 --======
+                    if busy_d = '0' then
+                        if or_reduce(spi_cmd) = '1' OR or_reduce(rd_regs) = '1' then
+                            spi_cmd_w <= spi_cmd;
+                            rd_regs_w <= rd_regs;
+                            data_byte_in_w <= data_byte_in;
+                            current_state <= dec_cmd;
+                        else
+                            spi_cmd_w <= (others => '0');
+                            rd_regs_w <= (others => '0');
+                            op_code <= (others => '0');
+                            data_byte_in_w <= (others => '0');
+                        end if;
+                    end if;
+
+                --======
+                when dec_cmd =>
+                --======
                     -- se arriva un comando attivo il contatore
-                    if or_reduce(spi_cmd) = '1' then        current_state <= send_op_code;
-                        timing_cnt_en <= '1';
+                    if or_reduce(spi_cmd_w) = '1' then        current_state <= start_timer;
+                    --     timing_cnt_en <= '1';
                         -- decodifica registro spi_cmd
-                        case( spi_cmd ) is
+                        case( spi_cmd_w) is
                             when "10000000" =>
                                 op_code <= c_op_codes(0); -- x"02"
                             when "01000000" =>
                                 op_code <= c_op_codes(1); -- x"04"
                             when "00100000" =>
                                 op_code <= c_op_codes(2); -- x"3A"
-                                r_data_byte_1 <= data_byte_in;
+                                -- r_data_byte_1 <= data_byte_in_w;
+                                r_data_byte_1 <= HI_threshold;
+                                r_data_byte_0 <= LO_threshold;
                             when "00010000" =>
                                 op_code <= c_op_codes(3); --x"3C"
-                                r_data_byte_1 <= data_byte_in;
+                                -- r_data_byte_1 <= data_byte_in_w;
+                                r_data_byte_1 <= HI_threshold;
+                                r_data_byte_0 <= LO_threshold;
                             when "00001000" =>
                                 op_code <= c_op_codes(4); --x"1E"
                             when "00000100" =>
@@ -207,19 +251,19 @@ begin
                                 -- se me ne arrivano due contemporaneamente è invalid
                                 current_state <= idle;
                         end case;
-                    elsif or_reduce(rd_regs) = '1' then     current_state <= send_op_code;
-                        timing_cnt_en <= '1';
-                        case( rd_regs ) is
+                    elsif or_reduce(rd_regs_w) = '1' then     current_state <= start_timer;
+                        -- timing_cnt_en <= '1';
+                        case( rd_regs_w ) is
                             when "10000000" =>
                                 op_code <= c_op_codes(5); -- x"82"
                             when "01000000" =>
                                 op_code <= c_op_codes(6); -- x"84"
                             when "00100000" =>
                                 op_code <= c_op_codes(7); -- x"BA"
-                                r_data_byte_1 <= data_byte_in;
+                                r_data_byte_1 <= data_byte_in_w;
                             when "00010000" =>
                                 op_code <= c_op_codes(8); --x"BC"
-                                r_data_byte_1 <= data_byte_in;
+                                r_data_byte_1 <= data_byte_in_w;
                             when "00001000" =>
                                 op_code <= c_op_codes(10); --x"90"
                             when "00000100" =>
@@ -233,14 +277,23 @@ begin
                                 -- se me ne arrivano due contemporaneamente è invalid
                                 current_state <= idle;
                         end case;
+                    else
+                        current_state <= idle;
+                        op_code <= (others => '0');
                     end if;
+
+                --======
+                when start_timer =>
+                --======
+                    timing_cnt_en <= '1';
+                    current_state <= send_op_code;
 
                 --======
                 when send_op_code =>
                 --======
                     -- calculate center val and hysteresis
                     if op_code = x"3A" OR op_code = x"3C" then
-                        r_data_byte_0 <= data_byte_in;
+                        -- r_data_byte_0 <= data_byte_in_w;
                         r_hyst_val <= conv_std_logic_vector((conv_integer(r_data_byte_1 - r_data_byte_0))/2, r_hyst_val'length);
                         r_center_val <= conv_std_logic_vector((conv_integer(r_data_byte_1 + r_data_byte_0))/2, r_center_val'length);
                     end if;
@@ -282,7 +335,7 @@ begin
                                 if op_code(7) = '0' then           current_state <= wr_to_slv;
                                     case( op_code ) is
                                         when x"04" | x"02" | x"1E" =>
-                                            mosi_w <= data_byte_in(7);
+                                            mosi_w <= data_byte_in_w(7);
                                         when x"3A" | x"3C" =>
                                             mosi_w <= r_hyst_val(7);
                                         when others =>
@@ -316,7 +369,7 @@ begin
                         -- serialize to mosi
                         case( op_code ) is
                             when x"04" | x"02" | x"1E" =>
-                                mosi_w <= data_byte_in(16 - conv_integer(timing_cnt));
+                                mosi_w <= data_byte_in_w(16 - conv_integer(timing_cnt));
                             when x"3A" | x"3C" =>
                                 if timing_cnt < term_cnt - 9 then
                                     mosi_w <= r_hyst_val(16 - conv_integer(timing_cnt));
@@ -326,7 +379,7 @@ begin
                             when others =>
                                 mosi_w <= '0';
                         end case;
-                    elsif timing_cnt = term_cnt then           current_state <= idle;
+                    elsif timing_cnt = term_cnt then                current_state <= idle;
                         timing_cnt_en <= '0';
                     end if;
 
