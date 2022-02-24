@@ -135,7 +135,6 @@ begin
         end if;
     end process;
 
-
     rd_data <= rd_data_w;
     o_bits_stored <= o_bits_stored_w;
     load_pulse <= load_pulse_w;

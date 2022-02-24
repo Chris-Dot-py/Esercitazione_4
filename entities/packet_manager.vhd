@@ -68,7 +68,6 @@ begin
 
     p_fsm : process(clock, reset)
         -- just for testing
-        variable L : line;
     begin
         if reset = '0' then
             current_state <= idle;

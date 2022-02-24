@@ -42,6 +42,7 @@ architecture HI_8345_arch of HI_8345 is
     signal r_SSB_2         : std_logic_vector(7 downto 0) := x"BB";
     signal r_SSB_3         : std_logic_vector(7 downto 0) := X"AA";
     signal c_sense_vals : std_logic_vector(31 downto 0) := r_SSB_3 & r_SSB_2 & r_SSB_1 & r_SSB_0;
+    -- signal c_sense_vals : std_logic_vector(31 downto 0) := (others => '0');
 
     signal op_code : std_logic_vector(7 downto 0) := (others => '0');
     signal data_byte_1 : std_logic_vector(7 downto 0) := (others => '0');
@@ -166,20 +167,12 @@ begin
                                 current_state <= idle;
                         end case;
                     elsif cnt = term_cnt-1 then                  current_state <= idle;
+
                         miso_w <= 'Z';
                     end if;
 
                 when wr_data =>
                     if cnt = 15 then
-                            -- if r_ctrl(1) = '1' then
-                            --     r_ctrl(0) <= '0';
-                            --     r_psen <= (others => '0');
-                            --     r_tmdata <= (others => '0');
-                            --     r_gohys <= (others => '0');
-                            --     r_gocval <= (others => '0');
-                            --     r_sohys <= (others => '0');
-                            --     r_socval <= (others => '0');
-                            -- end if;
                                 case( op_code ) is
                                     when x"02" =>
                                         r_ctrl <= shift_register;

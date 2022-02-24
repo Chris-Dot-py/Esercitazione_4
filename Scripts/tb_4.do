@@ -22,6 +22,12 @@ add wave -noupdate -group holt -radix hexadecimal /tb_4/HI_8345_i/mosi
 add wave -noupdate -group holt -radix hexadecimal /tb_4/HI_8345_i/miso
 add wave -noupdate -group holt -radix hexadecimal /tb_4/HI_8345_i/csn
 add wave -noupdate -group holt -radix hexadecimal /tb_4/HI_8345_i/current_state
+add wave -noupdate -expand -group holt -expand -group {holt regs} -radix hexadecimal /tb_4/HI_8345_i/r_ctrl
+add wave -noupdate -expand -group holt -expand -group {holt regs} -radix hexadecimal /tb_4/HI_8345_i/r_psen
+add wave -noupdate -expand -group holt -expand -group {holt regs} -radix hexadecimal /tb_4/HI_8345_i/r_gohys
+add wave -noupdate -expand -group holt -expand -group {holt regs} -radix hexadecimal /tb_4/HI_8345_i/r_gocval
+add wave -noupdate -expand -group holt -expand -group {holt regs} -radix hexadecimal /tb_4/HI_8345_i/r_sohys
+add wave -noupdate -expand -group holt -expand -group {holt regs} -radix hexadecimal /tb_4/HI_8345_i/r_socval
 add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/reset
 add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/receive_snf_data
 add wave -noupdate -group output_analyzer -radix hexadecimal /tb_4/tb_output_analysis_i/packet_in
@@ -95,4 +101,4 @@ add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_s
 add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/send_data_block
 add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/FIFO_switch
 add wave -noupdate -group ch_32 -radix hexadecimal /tb_4/std_discr_if_i/top_32_std_discr_ch_i/channel_31_i/r_config
-run 130 us;
+run 250 us;

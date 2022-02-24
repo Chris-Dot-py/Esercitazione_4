@@ -17,5 +17,4 @@
 
 5. add counter for sampling every X secs [_DONE_]
 
-6. Add tracking mechanism of the oldest bit in case of send_snf_data doesnt arrive before
-   the 11th bit [__]
+6. assuming that send_snf_data is sent every 10 stored bits : verify its functionality [_DONE_]

@@ -71,6 +71,7 @@ architecture tb_4_arch of tb_4 is
     signal packet_out       : std_logic;
     signal config_mode      : std_logic; -- to simulate
     signal config_done      : std_logic;
+    signal disable_ch       : std_logic_vector(31 downto 0) := (others => '0');
     signal set_config       : std_logic_vector(31 downto 0) := (others => '1');
     signal psen             : std_logic_vector(3 downto 0) := x"A";
     signal HI_threshold     : std_logic_vector(7 downto 0) := x"15";
@@ -96,7 +97,7 @@ begin
       config_done      => config_done,
       set_config       => set_config,
       -- disable_ch       => (31 => '0', 0 => '0', 15 => '0', others => '1'),
-        disable_ch       => ( others => '0'),
+        disable_ch       => disable_ch,
       psen             => psen,
       HI_threshold     => HI_threshold,
       LO_threshold     => LO_threshold,
@@ -146,25 +147,24 @@ begin
         wait for 100 ns;
         config_mode <= '1';
         set_config <= (others => '1');
+        disable_ch <= (31 => '0', 0 => '0', 15 => '0', others => '1');
         wait until rising_edge(config_done);
         config_mode <= '0';
-        wait for 21 us;
-
-
-        send_snf_data <= '1';
-        wait for 100 ns;
-        send_snf_data <= '0';
-        wait for 21 us;
+        wait for 60 us;
 
         send_snf_data <= '1';
         wait for 100 ns;
         send_snf_data <= '0';
-        wait for 21 us;
+        wait for 54 us;
 
         send_snf_data <= '1';
         wait for 100 ns;
         send_snf_data <= '0';
-        wait for 21 us;
+        wait for 54 us;
+
+        send_snf_data <= '1';
+        wait for 100 ns;
+        send_snf_data <= '0';
 
         wait;
     end process;

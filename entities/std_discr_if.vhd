@@ -1,3 +1,27 @@
+------------------------------------------------------------------------------------------
+--  BLOCK DESCRIPTION :
+--  On power on, the block starts on "reset_mode" until "config_mode" = '1'
+--
+--  This block has two operating modes: Configuration mode & Sampling Mode
+--
+--  Configuration Mode :
+--      * Enters this mode when "config_mode" = '1'
+--      * in this mode the SPI master configures the holt IC sending the following
+--        commands :
+--              1. set software_reset
+--              2. clear software_reset
+--              3. set sensor operating modes
+--              4. set sensor threhold values according to the operating mode:
+--                  4a. set gocenhys
+--                  4b. set socenhys
+--              5. set "config_done" = '1' then go into "sampling_mode"
+--
+--  Sampling Mode :
+--      * Enters this mode after "set_thresholds" in configuration mode
+--      * has a counter for sending the "spi_cmd" every 100us (10Ksps)
+--      * Exits this mode when "config_mode" = '1'
+------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
@@ -109,7 +133,7 @@ architecture std_discr_if_arch of std_discr_if is
     --------------------------------------------------------------------------------------
     constant number_of_slaves : integer range 0 to 3 := 1;
     constant FIFO_len : integer range 0 to 10 := 10;
-    constant term_cnt : integer := 50; -- 1666 for 10us with 16.66MHz
+    constant term_cnt : integer range 0 to 1650 := 1623; -- 1623 for 10us with 16.66MHz ( wr_bit is present every 99960 ns )
 
     --------------------------------------------------------------------------------------
     -- signals
@@ -139,10 +163,10 @@ architecture std_discr_if_arch of std_discr_if is
     --packet manager
 
     -- config mode delay
-    type t_config_states is (idle, set_SRes, release_SRes, set_psen, set_thresholds, sampling_mode);
+    type t_config_states is (reset_mode, set_SRes, release_SRes, set_psen, set_gocenhys, set_socenhys, sampling_mode);
     signal current_state : t_config_states;
 
-    signal cnt : std_logic_vector(7 downto 0);
+    signal cnt : std_logic_vector(10 downto 0);
     signal cnt_en : std_logic;
 
     signal first_threshold_setup_done : std_logic;
@@ -234,7 +258,7 @@ begin
     p_setup_fsm : process(clock_16MHz, reset)
     begin
         if reset = '0' then
-            current_state <= idle;
+            current_state <= reset_mode;
 
             spi_cmd <= (others => '0');
             rd_regs <= (others => '0');
@@ -256,7 +280,7 @@ begin
 
             case( current_state ) is
 
-                when idle =>
+                when reset_mode =>
                     if config_mode = '1' then
                         if busy_d = '0' AND busy = '0'then
                             current_state <= set_SRes;
@@ -267,7 +291,6 @@ begin
                         config_done_w <= '0';
                         -- save params
                         r_psen <= psen;
-
                     end if;
 
                 when set_SRes =>
@@ -286,28 +309,35 @@ begin
 
                 when set_psen =>
                     if busy = '0' AND busy_d = '1' then
-                        current_state <= set_thresholds;
+                        current_state <= set_gocenhys;
                         spi_cmd <= "00100000";
                         data_byte_in <= r_HI_threshold;
                         r_HI_threshold <= HI_threshold;
                         r_LO_threshold <= LO_threshold;
                     end if;
-                --
-                when set_thresholds =>
+
+                when set_gocenhys =>
+                    if busy = '0' AND busy_d = '1' then
+                        current_state <= set_socenhys;
+                        spi_cmd <= "00010000";
+                        data_byte_in <= r_HI_threshold;
+                        r_HI_threshold <= HI_threshold;
+                        r_LO_threshold <= LO_threshold;
+                    end if;
+
+                when set_socenhys =>
                     if busy = '0' AND busy_d = '1' then
                         current_state <= sampling_mode;
                         spi_cmd <= "00000000";
                         data_byte_in <= x"00";
                         config_done_w <= '1';
-
-                        samples_present_w <= (others => '0');
                     end if;
 
                 when sampling_mode =>
                     if config_mode = '0' then
                         if busy = '0' then
                             -- add timer for samples every 100us
-                            if cnt < term_cnt then -- 1666 is
+                            if cnt < term_cnt then -- 1623 is
                                 cnt <= cnt + 1;
                                 spi_cmd <= "00000000";
                             else
@@ -327,11 +357,11 @@ begin
                         end if;
                     else
                         cnt <= (others => '0');
-                        current_state <= idle;
+                        current_state <= reset_mode;
                     end if;
 
                 when others =>
-                    current_state <= idle;
+                    current_state <= reset_mode;
             end case;
 
         end if;
