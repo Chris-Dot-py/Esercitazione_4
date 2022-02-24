@@ -1,8 +1,16 @@
 ------------------------------------------------------------------------------------------
--- this spi master is specific to HI-8435
--- NOTE: between "spi_cmd" and "rd_regs" ONLY ONE can be active each time.
+--  BLOCK DESCRIPTION :
+--  * spi master comunicates with Holt IC via SPI bus.
 --
--- PORTARE FUORI DIVISORE CLOCK
+--  * When receiving spi commands during "idle" state, "spi_cmd" and all other input datas
+--    are stored in a placeholder register until the end of the comunication with holt.
+--
+--  * only one between spi_cmd and rd_regs can be active at once
+--
+--  * during the transmission a busy flag is HIGH to avoid spi command conflicts
+--
+--  CHANGES TO MAKE
+--  Instead of using: spi_cmd and rd_Regs use op_codes directly
 ------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -204,26 +212,20 @@ begin
                 --======
                 when idle =>
                 --======
-                    if busy_d = '0' then
-                        if or_reduce(spi_cmd) = '1' OR or_reduce(rd_regs) = '1' then
-                            spi_cmd_w <= spi_cmd;
-                            rd_regs_w <= rd_regs;
-                            data_byte_in_w <= data_byte_in;
-                            current_state <= dec_cmd;
-                        else
-                            spi_cmd_w <= (others => '0');
-                            rd_regs_w <= (others => '0');
-                            op_code <= (others => '0');
-                            data_byte_in_w <= (others => '0');
-                        end if;
+
+                    -- can directly use op_codes instead of using spi_cmd and rd_regs
+
+                    if or_reduce(spi_cmd) = '1' OR or_reduce(rd_regs) = '1' then
+                        spi_cmd_w <= spi_cmd;
+                        rd_regs_w <= rd_regs;
+                        data_byte_in_w <= data_byte_in;
+                        current_state <= dec_cmd;
                     end if;
 
                 --======
                 when dec_cmd =>
                 --======
-                    -- se arriva un comando attivo il contatore
                     if or_reduce(spi_cmd_w) = '1' then        current_state <= start_timer;
-                    --     timing_cnt_en <= '1';
                         -- decodifica registro spi_cmd
                         case( spi_cmd_w) is
                             when "10000000" =>
@@ -232,12 +234,10 @@ begin
                                 op_code <= c_op_codes(1); -- x"04"
                             when "00100000" =>
                                 op_code <= c_op_codes(2); -- x"3A"
-                                -- r_data_byte_1 <= data_byte_in_w;
                                 r_data_byte_1 <= HI_threshold;
                                 r_data_byte_0 <= LO_threshold;
                             when "00010000" =>
                                 op_code <= c_op_codes(3); --x"3C"
-                                -- r_data_byte_1 <= data_byte_in_w;
                                 r_data_byte_1 <= HI_threshold;
                                 r_data_byte_0 <= LO_threshold;
                             when "00001000" =>
@@ -293,7 +293,6 @@ begin
                 --======
                     -- calculate center val and hysteresis
                     if op_code = x"3A" OR op_code = x"3C" then
-                        -- r_data_byte_0 <= data_byte_in_w;
                         r_hyst_val <= conv_std_logic_vector((conv_integer(r_data_byte_1 - r_data_byte_0))/2, r_hyst_val'length);
                         r_center_val <= conv_std_logic_vector((conv_integer(r_data_byte_1 + r_data_byte_0))/2, r_center_val'length);
                     end if;
@@ -315,8 +314,6 @@ begin
                                             mosi_w <= '0';
                                     end case;
                                 elsif op_code(7) = '1' then        current_state <= rd_from_slv;
-
-
                                     sense_w(0) <= miso;
                                 end if;
                             end if;
@@ -324,8 +321,6 @@ begin
                         when x"F8" =>
                             term_cnt <= 42; -- 40 + 2
                             if timing_cnt >= 9 then       current_state <= rd_from_slv;
-
-
                                 sense_w(0) <= miso;
                             end if;
 
@@ -342,8 +337,6 @@ begin
                                             mosi_w <= '0';
                                     end case;
                                 elsif op_code(7) = '1' then        current_state <= rd_from_slv;
-
-
                                     sense_w(0) <= miso;
                                 end if;
                             end if;

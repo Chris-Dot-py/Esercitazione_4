@@ -19,7 +19,7 @@ entity packet_manager is
 
         send_data_block : out std_logic_vector(31 downto 0);
         ch_unavailable : in std_logic_vector(31 downto 0);
-        load_pulse : in std_logic_vector(31 downto 0);
+        o_data_ready : in std_logic_vector(31 downto 0);
         ch_label : in t_ch_label;
         block_data : in t_block_data := (others => (others => '0'));
         block_data_dim : in t_block_data_dim := (others => (others => '0'))
@@ -101,7 +101,7 @@ begin
                 --========
                 when freeze_dt =>
                 --========
-                    if load_pulse =  not (ch_unavailable) then
+                    if o_data_ready =  not (ch_unavailable) then
                         send_data_block_w <= (others => '0');
                         current_state <= collect_data;
                     end if;
@@ -110,7 +110,7 @@ begin
                 when collect_data =>
                 --========
                     -- raise "send_data_block" flag and, if channel is available, load
-                    -- data with "load_pulse"
+                    -- data with "o_data_ready"
                     -- make use of a memory where to store data so that available data
                     -- can be stored next to each other
                     -- repeat for all 32 channels

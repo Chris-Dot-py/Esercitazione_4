@@ -55,9 +55,7 @@ entity std_discr_if is
         disable_ch : in std_logic_vector(31 downto 0);
         psen           : in std_logic_vector(3 downto 0);
         HI_threshold : in std_logic_vector(7 downto 0);
-        LO_threshold : in std_logic_vector(7 downto 0);
-
-        samples_present : out std_logic_vector(3 downto 0)
+        LO_threshold : in std_logic_vector(7 downto 0)
     );
 end entity std_discr_if;
 
@@ -119,7 +117,7 @@ architecture std_discr_if_arch of std_discr_if is
       send_data_block : out std_logic_vector(31 downto 0);
 
       ch_unavailable  : in  std_logic_vector(31 downto 0);
-      load_pulse      : in  std_logic_vector(31 downto 0);
+      o_data_ready      : in  std_logic_vector(31 downto 0);
       ch_label        : in t_ch_label;
       block_data      : in  t_block_data;
       block_data_dim  : in  t_block_data_dim
@@ -133,21 +131,20 @@ architecture std_discr_if_arch of std_discr_if is
     --------------------------------------------------------------------------------------
     constant number_of_slaves : integer range 0 to 3 := 1;
     constant FIFO_len : integer range 0 to 10 := 10;
-    constant term_cnt : integer range 0 to 1650 := 1623; -- 1623 for 10us with 16.66MHz ( wr_bit is present every 99960 ns )
+    constant term_cnt : integer range 0 to 1650 := 50; -- 1623 for 10us with 16.66MHz ( wr_bit is present every 99960 ns )
 
     --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
     -- spi master
     signal busy         : std_logic;
-    signal busy_d         : std_logic;
+    signal busy_d       : std_logic;
     signal clock_16MHz  : std_logic;
     signal sense        : std_logic_vector(31 downto 0);
     signal data_ready   : std_logic;
-
     -- configuration signals
-    signal spi_cmd      : std_logic_vector(7 downto 0);
-    signal rd_regs      : std_logic_vector(7 downto 0);
+    signal spi_cmd      : std_logic_vector(7 downto 0); -- change if possible
+    signal rd_regs      : std_logic_vector(7 downto 0); -- change if possible
     signal data_byte_in : std_logic_vector(7 downto 0);
     -- placeholders
     signal r_psen : std_logic_vector(3 downto 0);
@@ -160,7 +157,6 @@ architecture std_discr_if_arch of std_discr_if is
     signal block_data_dim  : t_block_data_dim;
     signal ch_unavailable  : std_logic_vector(31 downto 0);
     signal ch_label        : t_ch_label;
-    --packet manager
 
     -- config mode delay
     type t_config_states is (reset_mode, set_SRes, release_SRes, set_psen, set_gocenhys, set_socenhys, sampling_mode);
@@ -168,15 +164,7 @@ architecture std_discr_if_arch of std_discr_if is
 
     signal cnt : std_logic_vector(10 downto 0);
     signal cnt_en : std_logic;
-
-    signal first_threshold_setup_done : std_logic;
-    signal data_byte_1_sent : std_logic;
-    signal SRes_done : std_logic;
     signal config_done_w : std_logic;
-
-
-    -- for testing purposes
-    signal samples_present_w : std_logic_vector(3 downto 0);
 
 begin
     --------------------------------------------------------------------------------------
@@ -235,7 +223,7 @@ begin
       send_data_block  => send_data_block, --
 
       ch_unavailable   => ch_unavailable, --
-      load_pulse       => o_data_ready, --
+      o_data_ready       => o_data_ready, --
       ch_label         => ch_label, --
       block_data       => block_data, --
       block_data_dim   => block_data_dim --
@@ -253,7 +241,6 @@ begin
         end if;
     end process;
 
-    samples_present <= samples_present_w;
     config_done <= config_done_w;
     p_setup_fsm : process(clock_16MHz, reset)
     begin
@@ -262,24 +249,19 @@ begin
 
             spi_cmd <= (others => '0');
             rd_regs <= (others => '0');
-            data_byte_in <= (others => '0');
 
+            data_byte_in <= (others => '0');
             r_psen <= (others => '0');
             r_HI_threshold <= (others => '0');
             r_LO_threshold <= (others => '0');
 
-            first_threshold_setup_done <= '0';
-            data_byte_1_sent <= '0';
-            SRes_done <= '0';
             cnt <= (others => '0');
             cnt_en <= '0';
             config_done_w <= '0';
 
-            samples_present_w <= (others => '0');
         elsif rising_edge(clock_16MHz) then
 
             case( current_state ) is
-
                 when reset_mode =>
                     if config_mode = '1' then
                         if busy_d = '0' AND busy = '0'then
@@ -311,7 +293,6 @@ begin
                     if busy = '0' AND busy_d = '1' then
                         current_state <= set_gocenhys;
                         spi_cmd <= "00100000";
-                        data_byte_in <= r_HI_threshold;
                         r_HI_threshold <= HI_threshold;
                         r_LO_threshold <= LO_threshold;
                     end if;
@@ -320,7 +301,6 @@ begin
                     if busy = '0' AND busy_d = '1' then
                         current_state <= set_socenhys;
                         spi_cmd <= "00010000";
-                        data_byte_in <= r_HI_threshold;
                         r_HI_threshold <= HI_threshold;
                         r_LO_threshold <= LO_threshold;
                     end if;
@@ -342,18 +322,8 @@ begin
                                 spi_cmd <= "00000000";
                             else
                                 spi_cmd <= "00000010";
-                                if send_snf_data = '1' then
-                                    samples_present_w <= (others => '0');
-                                else
-                                    samples_present_w <= samples_present_w + 1;
-                                end if;
                                 cnt <= (others => '0');
                             end if;
-
-                        end if;
-
-                        if send_snf_data = '1' then
-                            samples_present_w <= (others => '0');
                         end if;
                     else
                         cnt <= (others => '0');
@@ -362,8 +332,8 @@ begin
 
                 when others =>
                     current_state <= reset_mode;
-            end case;
 
+            end case;
         end if;
     end process;
 end architecture;

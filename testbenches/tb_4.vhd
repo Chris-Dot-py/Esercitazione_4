@@ -31,8 +31,7 @@ architecture tb_4_arch of tb_4 is
       disable_ch       : in  std_logic_vector(31 downto 0);
       psen             : in  std_logic_vector(3 downto 0);
       HI_threshold     : in  std_logic_vector(7 downto 0);
-      LO_threshold     : in  std_logic_vector(7 downto 0);
-      samples_present  : out std_logic_vector(3 downto 0)
+      LO_threshold     : in  std_logic_vector(7 downto 0)
     );
     end component std_discr_if;
 
@@ -55,9 +54,6 @@ architecture tb_4_arch of tb_4 is
     end component tb_output_analysis;
 
     --------------------------------------------------------------------------------------
-    -- constants
-    --------------------------------------------------------------------------------------
-    --------------------------------------------------------------------------------------
     -- signals
     --------------------------------------------------------------------------------------
     signal clock            : std_logic;
@@ -76,7 +72,6 @@ architecture tb_4_arch of tb_4 is
     signal psen             : std_logic_vector(3 downto 0) := x"A";
     signal HI_threshold     : std_logic_vector(7 downto 0) := x"15";
     signal LO_threshold     : std_logic_vector(7 downto 0) := x"09";
-    signal samples_present : std_logic_vector(3 downto 0);
 
 begin
     --------------------------------------------------------------------------------------
@@ -100,8 +95,7 @@ begin
         disable_ch       => disable_ch,
       psen             => psen,
       HI_threshold     => HI_threshold,
-      LO_threshold     => LO_threshold,
-      samples_present => samples_present
+      LO_threshold     => LO_threshold
     );
 
     HI_8345_i : HI_8345
@@ -147,7 +141,7 @@ begin
         wait for 100 ns;
         config_mode <= '1';
         set_config <= (others => '1');
-        disable_ch <= (31 => '0', 0 => '0', 15 => '0', others => '1');
+        disable_ch <= (others => '0');
         wait until rising_edge(config_done);
         config_mode <= '0';
         wait for 60 us;

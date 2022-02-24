@@ -107,7 +107,7 @@ begin
                         else
                             data_block(9 downto (10 - conv_integer(data_block_dim))) <= shift_register(conv_integer(data_block_dim)-1 downto 0);
                             write(L,string'("data block : "));
-                            hwrite(L, shift_register(conv_integer(data_block_dim)-1 downto 0));
+                            write(L, shift_register(conv_integer(data_block_dim)-1 downto 0));
                             write(L,string'("; "), justified => left, field => 5);
                             writeline(output, L);
                             i <= 0;
@@ -118,7 +118,7 @@ begin
                     else
                         data_block(9 downto (10 - conv_integer(data_block_dim))) <= shift_register(conv_integer(data_block_dim)-1 downto 0);
                         write(L,string'("data block : "));
-                        hwrite(L, shift_register(conv_integer(data_block_dim)-1 downto 0));
+                        write(L, shift_register(conv_integer(data_block_dim)-1 downto 0));
                         write(L,string'("; "), justified => left, field => 5);
                         writeline(output, L);
 

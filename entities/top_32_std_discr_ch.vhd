@@ -43,7 +43,7 @@ architecture top_32_std_discr_ch_arch of top_32_std_discr_ch is
       rd_op              : in  std_logic; --
       wr_op              : in  std_logic; --
       wr_data            : in  std_logic; --
-      load_pulse         : out std_logic; --
+      o_data_ready         : out std_logic; --
       rd_data            : out std_logic_vector(FIFO_len-1 downto 0); --
       o_bits_stored      : out std_logic_vector(3 downto 0); --
       std_discr_diag     : in  std_logic; -- to do
@@ -80,7 +80,7 @@ begin
       rd_op              => send_data_block(31), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(31),
-      load_pulse => o_data_ready(31),
+      o_data_ready => o_data_ready(31),
       rd_data            => block_data(31),
       o_bits_stored      => block_data_dim(31),
       std_discr_diag     => '0', --
@@ -109,7 +109,7 @@ begin
       rd_op              => send_data_block(30), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(30),
-      load_pulse => o_data_ready(30),
+      o_data_ready => o_data_ready(30),
       rd_data            => block_data(30),
       o_bits_stored      => block_data_dim(30),
       std_discr_diag     => '0', --
@@ -138,7 +138,7 @@ begin
       rd_op              => send_data_block(29), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(29),
-      load_pulse => o_data_ready(29),
+      o_data_ready => o_data_ready(29),
       rd_data            => block_data(29),
       o_bits_stored      => block_data_dim(29),
       std_discr_diag     => '0', --
@@ -167,7 +167,7 @@ begin
       rd_op              => send_data_block(28), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(28),
-      load_pulse => o_data_ready(28),
+      o_data_ready => o_data_ready(28),
       rd_data            => block_data(28),
       o_bits_stored      => block_data_dim(28),
       std_discr_diag     => '0', --
@@ -196,7 +196,7 @@ begin
       rd_op              => send_data_block(27), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(27),
-      load_pulse => o_data_ready(27),
+      o_data_ready => o_data_ready(27),
       rd_data            => block_data(27),
       o_bits_stored      => block_data_dim(27),
       std_discr_diag     => '0', --
@@ -225,7 +225,7 @@ begin
       rd_op              => send_data_block(26), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(26),
-      load_pulse => o_data_ready(26),
+      o_data_ready => o_data_ready(26),
       rd_data            => block_data(26),
       o_bits_stored      => block_data_dim(26),
       std_discr_diag     => '0', --
@@ -254,7 +254,7 @@ begin
       rd_op              => send_data_block(25), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(25),
-      load_pulse => o_data_ready(25),
+      o_data_ready => o_data_ready(25),
       rd_data            => block_data(25),
       o_bits_stored      => block_data_dim(25),
       std_discr_diag     => '0', --
@@ -283,7 +283,7 @@ begin
       rd_op              => send_data_block(24), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(24),
-      load_pulse => o_data_ready(24),
+      o_data_ready => o_data_ready(24),
       rd_data            => block_data(24),
       o_bits_stored      => block_data_dim(24),
       std_discr_diag     => '0', --
@@ -312,7 +312,7 @@ begin
       rd_op              => send_data_block(23), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(23),
-      load_pulse => o_data_ready(23),
+      o_data_ready => o_data_ready(23),
       rd_data            => block_data(23),
       o_bits_stored      => block_data_dim(23),
       std_discr_diag     => '0', --
@@ -341,7 +341,7 @@ begin
       rd_op              => send_data_block(22), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(22),
-      load_pulse => o_data_ready(22),
+      o_data_ready => o_data_ready(22),
       rd_data            => block_data(22),
       o_bits_stored      => block_data_dim(22),
       std_discr_diag     => '0', --
@@ -370,7 +370,7 @@ begin
       rd_op              => send_data_block(21), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(21),
-      load_pulse => o_data_ready(21),
+      o_data_ready => o_data_ready(21),
       rd_data            => block_data(21),
       o_bits_stored      => block_data_dim(21),
       std_discr_diag     => '0', --
@@ -399,7 +399,7 @@ begin
       rd_op              => send_data_block(20), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(20),
-      load_pulse => o_data_ready(20),
+      o_data_ready => o_data_ready(20),
       rd_data            => block_data(20),
       o_bits_stored      => block_data_dim(20),
       std_discr_diag     => '0', --
@@ -428,7 +428,7 @@ begin
       rd_op              => send_data_block(19), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(19),
-      load_pulse => o_data_ready(19),
+      o_data_ready => o_data_ready(19),
       rd_data            => block_data(19),
       o_bits_stored      => block_data_dim(19),
       std_discr_diag     => '0', --
@@ -457,7 +457,7 @@ begin
       rd_op              => send_data_block(18), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(18),
-      load_pulse => o_data_ready(18),
+      o_data_ready => o_data_ready(18),
       rd_data            => block_data(18),
       o_bits_stored      => block_data_dim(18),
       std_discr_diag     => '0', --
@@ -486,7 +486,7 @@ begin
       rd_op              => send_data_block(17), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(17),
-      load_pulse => o_data_ready(17),
+      o_data_ready => o_data_ready(17),
       rd_data            => block_data(17),
       o_bits_stored      => block_data_dim(17),
       std_discr_diag     => '0', --
@@ -515,7 +515,7 @@ begin
       rd_op              => send_data_block(16), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(16),
-      load_pulse => o_data_ready(16),
+      o_data_ready => o_data_ready(16),
       rd_data            => block_data(16),
       o_bits_stored      => block_data_dim(16),
       std_discr_diag     => '0', --
@@ -544,7 +544,7 @@ begin
       rd_op              => send_data_block(15), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(15),
-      load_pulse => o_data_ready(15),
+      o_data_ready => o_data_ready(15),
       rd_data            => block_data(15),
       o_bits_stored      => block_data_dim(15),
       std_discr_diag     => '0', --
@@ -573,7 +573,7 @@ begin
       rd_op              => send_data_block(14), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(14),
-      load_pulse => o_data_ready(14),
+      o_data_ready => o_data_ready(14),
       rd_data            => block_data(14),
       o_bits_stored      => block_data_dim(14),
       std_discr_diag     => '0', --
@@ -602,7 +602,7 @@ begin
       rd_op              => send_data_block(13), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(13),
-      load_pulse => o_data_ready(13),
+      o_data_ready => o_data_ready(13),
       rd_data            => block_data(13),
       o_bits_stored      => block_data_dim(13),
       std_discr_diag     => '0', --
@@ -631,7 +631,7 @@ begin
       rd_op              => send_data_block(12), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(12),
-      load_pulse => o_data_ready(12),
+      o_data_ready => o_data_ready(12),
       rd_data            => block_data(12),
       o_bits_stored      => block_data_dim(12),
       std_discr_diag     => '0', --
@@ -660,7 +660,7 @@ begin
       rd_op              => send_data_block(11), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(11),
-      load_pulse => o_data_ready(11),
+      o_data_ready => o_data_ready(11),
       rd_data            => block_data(11),
       o_bits_stored      => block_data_dim(11),
       std_discr_diag     => '0', --
@@ -689,7 +689,7 @@ begin
       rd_op              => send_data_block(10), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(10),
-      load_pulse => o_data_ready(10),
+      o_data_ready => o_data_ready(10),
       rd_data            => block_data(10),
       o_bits_stored      => block_data_dim(10),
       std_discr_diag     => '0', --
@@ -718,7 +718,7 @@ begin
       rd_op              => send_data_block(9), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(9),
-      load_pulse => o_data_ready(9),
+      o_data_ready => o_data_ready(9),
       rd_data            => block_data(9),
       o_bits_stored      => block_data_dim(9),
       std_discr_diag     => '0', --
@@ -747,7 +747,7 @@ begin
       rd_op              => send_data_block(8), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(8),
-      load_pulse => o_data_ready(8),
+      o_data_ready => o_data_ready(8),
       rd_data            => block_data(8),
       o_bits_stored      => block_data_dim(8),
       std_discr_diag     => '0', --
@@ -776,7 +776,7 @@ begin
       rd_op              => send_data_block(7), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(7),
-      load_pulse => o_data_ready(7),
+      o_data_ready => o_data_ready(7),
       rd_data            => block_data(7),
       o_bits_stored      => block_data_dim(7),
       std_discr_diag     => '0', --
@@ -805,7 +805,7 @@ begin
       rd_op              => send_data_block(6), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(6),
-      load_pulse => o_data_ready(6),
+      o_data_ready => o_data_ready(6),
       rd_data            => block_data(6),
       o_bits_stored      => block_data_dim(6),
       std_discr_diag     => '0', --
@@ -834,7 +834,7 @@ begin
       rd_op              => send_data_block(5), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(5),
-      load_pulse => o_data_ready(5),
+      o_data_ready => o_data_ready(5),
       rd_data            => block_data(5),
       o_bits_stored      => block_data_dim(5),
       std_discr_diag     => '0', --
@@ -863,7 +863,7 @@ begin
       rd_op              => send_data_block(4), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(4),
-      load_pulse => o_data_ready(4),
+      o_data_ready => o_data_ready(4),
       rd_data            => block_data(4),
       o_bits_stored      => block_data_dim(4),
       std_discr_diag     => '0', --
@@ -892,7 +892,7 @@ begin
       rd_op              => send_data_block(3), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(3),
-      load_pulse => o_data_ready(3),
+      o_data_ready => o_data_ready(3),
       rd_data            => block_data(3),
       o_bits_stored      => block_data_dim(3),
       std_discr_diag     => '0', --
@@ -921,7 +921,7 @@ begin
       rd_op              => send_data_block(2), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(2),
-      load_pulse => o_data_ready(2),
+      o_data_ready => o_data_ready(2),
       rd_data            => block_data(2),
       o_bits_stored      => block_data_dim(2),
       std_discr_diag     => '0', --
@@ -950,7 +950,7 @@ begin
       rd_op              => send_data_block(1), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(1),
-      load_pulse => o_data_ready(1),
+      o_data_ready => o_data_ready(1),
       rd_data            => block_data(1),
       o_bits_stored      => block_data_dim(1),
       std_discr_diag     => '0', --
@@ -979,7 +979,7 @@ begin
       rd_op              => send_data_block(0), -- send ch_data_block
       wr_op              => data_ready,
       wr_data            => sense(0),
-      load_pulse => o_data_ready(0),
+      o_data_ready => o_data_ready(0),
       rd_data            => block_data(0),
       o_bits_stored      => block_data_dim(0),
       std_discr_diag     => '0', --

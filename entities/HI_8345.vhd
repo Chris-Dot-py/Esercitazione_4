@@ -38,10 +38,11 @@ architecture HI_8345_arch of HI_8345 is
     signal r_sohys         : std_logic_vector(7 downto 0) := (others => '0');
     signal r_socval        : std_logic_vector(7 downto 0) := (others => '0');
     signal r_SSB_0         : std_logic_vector(7 downto 0) := x"DD";
-    signal r_SSB_1         : std_logic_vector(7 downto 0) := x"CC";
+    signal r_SSB_1         : std_logic_vector(7 downto 0) := "11001100";
     signal r_SSB_2         : std_logic_vector(7 downto 0) := x"BB";
-    signal r_SSB_3         : std_logic_vector(7 downto 0) := X"AA";
-    signal c_sense_vals : std_logic_vector(31 downto 0) := r_SSB_3 & r_SSB_2 & r_SSB_1 & r_SSB_0;
+    signal r_SSB_3         : std_logic_vector(7 downto 0) := "10101010";
+    -- signal c_sense_vals : std_logic_vector(31 downto 0) := r_SSB_0 & r_SSB_1 & r_SSB_2 & r_SSB_3;
+    signal c_sense_vals : std_logic_vector(31 downto 0) := (others => '0');
     -- signal c_sense_vals : std_logic_vector(31 downto 0) := (others => '0');
 
     signal op_code : std_logic_vector(7 downto 0) := (others => '0');
@@ -88,6 +89,7 @@ begin
             case( current_state ) is
                 when idle =>
                     current_state <= rd_op_code;
+
                     miso_w <= 'Z';
                 when rd_op_code =>
                     if  cnt = 7 then
@@ -167,6 +169,10 @@ begin
                                 current_state <= idle;
                         end case;
                     elsif cnt = term_cnt-1 then                  current_state <= idle;
+
+                        --========
+                        c_sense_vals <= c_sense_vals + 1;
+                        --========
 
                         miso_w <= 'Z';
                     end if;

@@ -8,8 +8,7 @@
         * ( main entity ) must have a counter for fixed 10 ksps sampling [_DONE_]
 
 3. discrete I/O data must be processed as packets when needed [_DONE_]
-4. ( main entity ) must have BIT (SBIT and IBIT) as INTERNAL control. [__]
-        -> so It doesn't need any external controls to be activated, how is it activated then? [__]
+
 
 5. output functionality ( std_discr_dir = '1' ) [__]
 
@@ -30,9 +29,9 @@
         + unit must provide commands and parameters to send to HOLT IC [_DONE_]
         + unit is directly controlled by the signal that dictates the operation mode of the ( main entity ) ( see pt. 2 "configuration mode" ) [_DONE_]               
     * when in "sampling mode" sensor values (output) is accompanied by "data_ready" signal [_FIX_THE_FLAG_DURATION_] (it is working though)
-    * Verify that the sensor channel "N" data is sent to the "N"th standard discrete IO channel [__]
+    * Verify that the sensor channel "N" data is sent to the "N"th standard discrete IO channel [_DONE_]
         ( example : sensor 32 bit is being stored in standard discr_channel 32  )
-        <!-- * at power on SPI must send software reset and release to holt ( see configuration mode and C231 ) [__] -->
+    * at power on SPI must send software reset and release to holt ( see configuration mode and C231 ) [_DONE_]
 
 2. standard discrete channel :
     * configured during "configuration mode" [__]
@@ -64,3 +63,6 @@
 
 5. During configuration mode, do I need to reread HOLT regs to verify the correct configs? [__]
    ->
+
+4. ( main entity ) must have BIT (SBIT and IBIT) as INTERNAL control. [__]
+   -> so It doesn't need any external controls to be activated, how is it activated then? [__]
